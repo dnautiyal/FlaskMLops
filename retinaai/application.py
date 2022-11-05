@@ -1,4 +1,4 @@
-from retinaai import create_app
+from client import create_app
 
 # Create the Flask app
 application = app = create_app()
