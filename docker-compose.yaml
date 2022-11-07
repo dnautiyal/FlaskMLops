@@ -11,7 +11,7 @@ services:
       - webapp
   inference-service:
     build:
-      context: ./inference-service
+      context: ./inference_service
     ports:
       - "8001:8000"
   webapp:
