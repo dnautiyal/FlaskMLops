@@ -51,8 +51,10 @@ def retina_ai():
                     client.upload_file(Bucket = INPUT_S3_BUCKET, Filename = local_file_name, Key = f'{INPUT_S3_KEY}/{new_file_name}')
                     os.remove(local_file_name)
                     logger.info(f"Successfully handled {new_file_name}")
+                except OSError as e:
+                    logger.warn ("Error deleting file: %s - %s." % (e.filename, e.strerror))
                 except Exception as e:
-                    print(e)
+                    logger.warn(e)
                 
             
             # Get category of prediction

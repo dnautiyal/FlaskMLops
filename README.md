@@ -2,6 +2,11 @@
 
 - docker build -t aerial-detection-webapp .
 - docker run -e AWS_ACCESS_KEY_ID=$(aws configure get aws_access_key_id) -e AWS_SECRET_ACCESS_KEY=$(aws configure get aws_secret_access_key) -p 8080:8080 aerial-detection-webapp
+- docker build -t aerial-detection-inference .
+- docker run -e AWS_ACCESS_KEY_ID=$(aws configure get aws_access_key_id) -e AWS_SECRET_ACCESS_KEY=$(aws configure get aws_secret_access_key) -p 8080:8080 aerial-detection-inference
+
+## to run from command line 
+- uvicorn inference_service:app --reload
 
 
 ## to stop the container
