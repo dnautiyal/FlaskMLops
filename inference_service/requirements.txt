@@ -1,0 +1,9 @@
+tritonclient[all]
+numpy
+opencv-python #cv2
+argparse
+fastapi
+boto3
+uvicorn
+pydantic
+uvicorn

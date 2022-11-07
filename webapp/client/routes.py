@@ -13,7 +13,9 @@ logger = logging.getLogger(__name__)
 INPUT_S3_BUCKET = "aerial-detection-mlops4"
 INPUT_S3_KEY =  "inferencing/photos/input"
 tmp_file_folder = "./tmp_data"
+
 client = boto3.client('s3')
+
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS

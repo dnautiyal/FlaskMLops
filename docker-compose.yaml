@@ -1,0 +1,29 @@
+version: "3.5"
+services:
+  main:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    ports:
+      - "8002:8000"
+  inference-service:
+    build:
+      context: ./inference-service
+    ports:
+      - "8001:8000"
+  webapp:
+    build:
+      context: ./webapp
+    ports:
+      - "8080:8000"
+  triton:
+    image: nvcr.io/nvidia/tritonserver:22.02-py3
+    env_file:
+      - .aws.env
+    ports:
+      - "8000:8000"
+    command:
+      [
+        "tritonserver",
+        "--model-repository=s3://aerial-detection-mlops4/model/Visdrone/Yolov7/triton-deploy/models/"
+      ]
