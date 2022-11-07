@@ -6,9 +6,9 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8002:8000"
-      depends_on:
-        - inference-service
-        - webapp
+    depends_on:
+      - inference-service
+      - webapp
   inference-service:
     build:
       context: ./inference-service
