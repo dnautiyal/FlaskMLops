@@ -12,8 +12,8 @@ services:
   inference-service:
     build:
       context: ./inference_service
-      volumes:
-        - $HOME/.aws/:/home/.aws/        
+    volumes:
+      - $HOME/.aws/:/home/.aws/        
     ports:
       - "8001:8000"
   # webapp:
