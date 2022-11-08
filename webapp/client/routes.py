@@ -56,7 +56,7 @@ def retina_ai():
                             "output_image_file_url": f's3://{S3_BUCKET}/{OUTPUT_S3_IMAGES_KEY}/OUT-{new_file_name}',
                             "output_label_file_url": f's3://{S3_BUCKET}/{OUTPUT_S3_IMAGES_KEY}/OUT-{os.path.splitext(new_file_name)[0]}.txt'
                             }
-                    r = requests.get(url = "http://inference-service:8005/detect", params = data)
+                    r = requests.get(url = "http://inference-service:8080/detect", params = data)
                     print(r.status_code)
                     data = r.json()
                     print(data)
