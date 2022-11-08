@@ -5,7 +5,7 @@ services:
       context: ./
       dockerfile: Dockerfile      
     ports:
-      - "8002:8000"
+      - "8004:8000"
     depends_on:
       - inference-service
       # - webapp
@@ -17,7 +17,7 @@ services:
     volumes:
       - ~/.aws/:/root/.aws:ro        
     ports:
-      - "8001:8000"
+      - "8005:8000"
   # webapp:
   #   build:
   #     context: ./webapp
@@ -28,7 +28,7 @@ services:
     env_file:
       - .aws.env
     ports:
-      - "8000:8000"
+      - "8003:8000" # part 8000 http, 8001 GRPC, 8002 Metric Service
     command:
       [
         "tritonserver",
