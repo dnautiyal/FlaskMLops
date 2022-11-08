@@ -24,6 +24,10 @@ services:
   webapp:
     build:
       context: ./webapp
+    environment:
+      - AWS_PROFILE=default
+    volumes:
+      - ~/.aws/:/root/.aws:ro
     ports:
       - "8006:8080"
   triton:
