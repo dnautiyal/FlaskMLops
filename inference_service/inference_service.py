@@ -20,7 +20,7 @@ tmp_output_lbl_folder = "./tmp_data/output/label"
 
 client = boto3.client('s3')
 
-
+triton_client = None
 #The inference-service endpoint receives post requests with the image and returns the transformed image
 @app.get("/detect/", tags=["Object Detect"])
 async def detect(input_image_file_url: str, output_image_file_url: str, output_label_file_url: str):
