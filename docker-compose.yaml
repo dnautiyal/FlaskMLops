@@ -33,7 +33,7 @@ services:
       [
         "tritonserver",
         "--model-repository=s3://aerial-detection-mlops4/model/Visdrone/Yolov7/triton-deploy/models/",
-        "--gpus=all",
+        # "--gpus=all",
         "--rm",
         "--ipc=host",
         "--shm-size=1g",
