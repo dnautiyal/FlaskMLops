@@ -47,4 +47,4 @@ def parse_s3_url(s3_path: str):
 
 @app.get("/", tags=["Health Check"])
 async def root():
-    return {"message": "Ok"}
+    return {"inference_service_health": "Ok"}
