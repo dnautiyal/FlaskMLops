@@ -4,7 +4,7 @@ import requests
 
 #We generate a new FastAPI app in the Prod environment
 #https://fastapi.tiangolo.com/
-app = FastAPI(title='FastAPI Main', root_path="/Prod/")
+app = FastAPI(title='FastAPI Main')
 
 
 #Call your get function for a health Check
