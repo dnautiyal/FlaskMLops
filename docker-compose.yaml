@@ -25,10 +25,13 @@ services:
   #     - "8080:8000"
   triton:
     image: nvcr.io/nvidia/tritonserver:22.02-py3
+    runtime: nvidia
     env_file:
       - .aws.env
     ports:
       - "8001:8001" # part 8000 http, 8001 GRPC, 8002 Metric Service
+      - "8000:8000"
+      - "8002:8002"
     command:
       [
         "tritonserver",
@@ -45,3 +48,7 @@ services:
         "--strict-model-config=false",
         # "--log-verbose=1"
       ]
+      shm_size: 1g
+      ulimits:
+        memlock: -1
+        stack: 67108864
