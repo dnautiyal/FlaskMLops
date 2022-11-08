@@ -3,4 +3,3 @@ boto3
 gunicorn
 python-multipart
 requests
-json
