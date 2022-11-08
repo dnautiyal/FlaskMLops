@@ -9,7 +9,7 @@ import os
 triton_url = 'triton:8001'
 model = 'yolov7-visdrone-finetuned'
 logger = logging.getLogger('inference_service')
-# triton_client = TritonClient(model, triton_url)
+triton_client = TritonClient(model, triton_url)
 
 #We generate a new FastAPI app in the Prod environment
 #https://fastapi.tiangolo.com/

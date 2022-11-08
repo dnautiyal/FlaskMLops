@@ -17,7 +17,7 @@ class TritonClient:
 
 
     # https://docs.python.org/3/library/argparse.html#argumentparser-objects
-    def __init__(self, model = 'yolov7-visdrone-finetuned', triton_url='triton:8000'):
+    def __init__(self, model = 'yolov7-visdrone-finetuned', triton_url='triton:8001'):
         """
         We instantiate the TritonClient class with the triton_url
         Args:
