@@ -43,5 +43,5 @@ services:
         # "-p8001:8001",
         # "-p8002:8002",
         "--strict-model-config=false",
-        "--log-verbose 1"
+        "--log-verbose=1"
       ]
