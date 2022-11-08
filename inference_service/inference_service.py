@@ -6,7 +6,7 @@ from urllib.parse import unquote
 import boto3
 import os
 
-_triton_url = 'triton:8002'
+_triton_url = 'triton:8001'
 _model = 'yolov7-visdrone-finetuned'
 logger = logging.getLogger('inference_service')
 
