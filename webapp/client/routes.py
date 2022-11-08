@@ -10,11 +10,13 @@ import logging
 # ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 ALLOWED_EXTENSIONS = {'jpg'}
 logger = logging.getLogger(__name__)
-INPUT_S3_BUCKET = "aerial-detection-mlops4"
+S3_BUCKET = "aerial-detection-mlops4"
 INPUT_S3_KEY =  "inferencing/photos/input"
+OUTPUT_S3_IMAGES_KEY =  "inferencing/photos/output/images"
+OUTPUT_S3_LABELS_KEY =  "inferencing/photos/output/labels"
 tmp_file_folder = "./tmp_data"
 
-client = boto3.client('s3')
+s3_client = boto3.client('s3')
 
 def allowed_file(filename):
     return '.' in filename and \
@@ -48,7 +50,7 @@ def retina_ai():
                     os.makedirs(tmp_file_folder, exist_ok=True) 
                     local_file_name = f'{tmp_file_folder}/{new_file_name}'
                     img.save(local_file_name)
-                    client.upload_file(Bucket = INPUT_S3_BUCKET, Filename = local_file_name, Key = f'{INPUT_S3_KEY}/{new_file_name}')
+                    s3_client.upload_file(Bucket = S3_BUCKET, Filename = local_file_name, Key = f'{INPUT_S3_KEY}/{new_file_name}')
                     os.remove(local_file_name)
                     logger.info(f"Successfully handled {new_file_name}")
                 except OSError as e:
