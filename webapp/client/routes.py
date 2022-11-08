@@ -64,13 +64,13 @@ def retina_ai():
                     logger.info(f"Successfully handled {new_file_name}")
                     logger.info(r.text)
                 except requests.exceptions.HTTPError as errh:
-                    print ("Http Error:",errh)
+                    logger.info("Http Error:",errh)
                 except requests.exceptions.ConnectionError as errc:
-                    print ("Error Connecting:",errc)
+                    logger.info("Error Connecting:",errc)
                 except requests.exceptions.Timeout as errt:
-                    print ("Timeout Error:",errt)
+                    logger.info("Timeout Error:",errt)
                 except requests.exceptions.RequestException as err:
-                    print ("OOps: Something Else",err)
+                    logger.info("OOps: Something Else",err)
                 # except OSError as e:
                 #     logger.warn ("Error deleting file: %s - %s." % (e.filename, e.strerror))
                 # except Exception as e:
