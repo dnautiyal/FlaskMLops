@@ -8,17 +8,17 @@ services:
       - "8002:8000"
     depends_on:
       - inference-service
-      - webapp
+      # - webapp
   inference-service:
     build:
       context: ./inference_service
     ports:
       - "8001:8000"
-  webapp:
-    build:
-      context: ./webapp
-    ports:
-      - "8080:8000"
+  # webapp:
+  #   build:
+  #     context: ./webapp
+  #   ports:
+  #     - "8080:8000"
   # triton:
   #   image: nvcr.io/nvidia/tritonserver:22.02-py3
   #   env_file:
