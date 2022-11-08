@@ -80,7 +80,7 @@ class TritonClient:
                 self.logger.error("Got: {}".format(ex.message()))
                 sys.exit(1)
 
-    def detectImage(self, input_image_file, output_image_file, output_label_file, image_width = 960, image_height = 544):
+    def detectImage(self, input_image_file, output_image_file, output_label_file, image_width = 960, image_height = 960):
         #     self.logger.info("Running in 'image' mode")
         if not input_image_file:
             self.logger.warn("FAILED: no input image")
