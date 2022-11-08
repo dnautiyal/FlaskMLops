@@ -17,7 +17,7 @@ S3_BUCKET = "aerial-detection-mlops4"
 INPUT_S3_KEY =  "inferencing/photos/input"
 OUTPUT_S3_IMAGES_KEY =  "inferencing/photos/output/images"
 OUTPUT_S3_LABELS_KEY =  "inferencing/photos/output/labels"
-tmp_file_folder = "./tmp_data"
+tmp_file_folder = "./static/tmp_data"
 
 s3_client = boto3.client('s3')
 
@@ -84,7 +84,7 @@ def retina_ai():
             # Get category of prediction
             category_data = "received file"
             # Render the result template
-            return render_template('result.html', category=category_data, file_name = local_output_file_name)
+            return render_template('result.html', input_file_name=local_file_name, output_file_name = local_output_file_name)
         return redirect(request.url)
     
 def parse_s3_url(s3_path: str):
