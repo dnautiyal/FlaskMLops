@@ -94,5 +94,4 @@ def parse_s3_url(s3_path: str):
     file_name = s3_path_split[-1]
     return bucket_name, key_name_without_file, file_name
 
-d
 
