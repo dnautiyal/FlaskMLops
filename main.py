@@ -15,5 +15,5 @@ async def root():
     response_inference = requests.get("http://inference-service:8000/")
     # response_face_emotion = requests.get("http://webapp:8000/")
     # return [response_face_bokeh.content, response_face_emotion.content]
-    return response_inference
+    return response_inference.content
     # return {"main-health-check":"OK"}
