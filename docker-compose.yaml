@@ -12,8 +12,10 @@ services:
   inference-service:
     build:
       context: ./inference_service
+    environment:
+      - AWS_PROFILE=default
     volumes:
-      - $HOME/.aws/:/home/.aws/        
+      - ~/.aws/:/root/.aws:ro        
     ports:
       - "8001:8000"
   # webapp:
