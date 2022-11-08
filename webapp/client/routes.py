@@ -64,6 +64,8 @@ def retina_ai():
                     logger.info(r.text)
                     dict = json.loads(r.text)
                     output_image_file_url = dict["output_image_file_url"]
+                    
+                    logger.info(f'Output file is : {output_image_file_url}')
                     bucket_name, key_name_without_file, file_name = parse_s3_url(unquote(output_image_file_url))
                     local_output_file_name = f'{tmp_file_folder}{os.sep}{file_name}'
                     s3_client.download_file(Bucket = bucket_name, Key = f'{key_name_without_file}/{file_name}', Filename = local_output_file_name)
