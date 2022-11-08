@@ -63,10 +63,18 @@ def retina_ai():
                     # os.remove(local_file_name)
                     logger.info(f"Successfully handled {new_file_name}")
                     logger.info(r.text)
-                except OSError as e:
-                    logger.warn ("Error deleting file: %s - %s." % (e.filename, e.strerror))
-                except Exception as e:
-                    logger.warn(e)
+                except requests.exceptions.HTTPError as errh:
+                    print ("Http Error:",errh)
+                except requests.exceptions.ConnectionError as errc:
+                    print ("Error Connecting:",errc)
+                except requests.exceptions.Timeout as errt:
+                    print ("Timeout Error:",errt)
+                except requests.exceptions.RequestException as err:
+                    print ("OOps: Something Else",err)
+                # except OSError as e:
+                #     logger.warn ("Error deleting file: %s - %s." % (e.filename, e.strerror))
+                # except Exception as e:
+                #     logger.warn(e)
                 
             
             # Get category of prediction
