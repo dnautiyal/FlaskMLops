@@ -12,6 +12,13 @@
 ## to stop the container
 docker stop <container_name>
 
+## doing it thry Docker-Compose
+- git pull https://github.com/dnautiyal/FlaskMLops.git
+- docker-compose -f docker-compose.yaml up --build
+- docker-compose down 
+
+
+
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 ## TensorRT engine

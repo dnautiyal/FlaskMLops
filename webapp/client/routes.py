@@ -6,6 +6,7 @@ import uuid
 import boto3
 import os
 import logging
+import requests
 
 # ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 ALLOWED_EXTENSIONS = {'jpg'}
@@ -51,8 +52,14 @@ def retina_ai():
                     local_file_name = f'{tmp_file_folder}/{new_file_name}'
                     img.save(local_file_name)
                     s3_client.upload_file(Bucket = S3_BUCKET, Filename = local_file_name, Key = f'{INPUT_S3_KEY}/{new_file_name}')
-                    os.remove(local_file_name)
+                    data = {"input_image_file_url": f's3://{S3_BUCKET}/{INPUT_S3_KEY}/{new_file_name}',
+                            "output_image_file_url": f's3://{S3_BUCKET}/{OUTPUT_S3_IMAGES_KEY}/OUT-{new_file_name}',
+                            "output_label_file_url": f's3://{S3_BUCKET}/{OUTPUT_S3_IMAGES_KEY}/OUT-{os.path.splitext(new_file_name)[0]}.txt'
+                            }
+                    r = requests.post(url = "http://inference-service:8005/detect/", data = data)
+                    # os.remove(local_file_name)
                     logger.info(f"Successfully handled {new_file_name}")
+                    logger.info(r.text)
                 except OSError as e:
                     logger.warn ("Error deleting file: %s - %s." % (e.filename, e.strerror))
                 except Exception as e:
