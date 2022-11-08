@@ -19,7 +19,7 @@ tmp_output_img_folder = "./tmp_data/output/image"
 tmp_output_lbl_folder = "./tmp_data/output/label"
 
 client = boto3.client('s3')
-global triton_client
+triton_client = None
 
 #The inference-service endpoint receives post requests with the image and returns the transformed image
 @app.get("/detect/", tags=["Object Detect"])
@@ -46,7 +46,7 @@ async def detect(input_image_file_url: str, output_image_file_url: str, output_l
         new_out_image_file_name_only = temp_output_image_filename.split('/')[-1]
         client.upload_file(Bucket = out_bucket_name, Filename = temp_output_image_filename, Key = f'{out_key_name_without_file}/{new_out_image_file_name_only}')
     except Exception as e:
-        logger.error(e)
+        print(e)
     return {"input_image_file_url": input_image_file_url, "output_image_file_url": temp_output_image_filename}
 
 def parse_s3_url(s3_path: str):
@@ -57,8 +57,8 @@ def parse_s3_url(s3_path: str):
     return bucket_name, key_name_without_file, file_name
 
 def get_triton_client():
-    if triton_client is None:
-        triton_client = TritonClient(model = _model, triton_url = _triton_url)
+    # if triton_client is None:
+    triton_client = TritonClient(model = _model, triton_url = _triton_url)
     return triton_client
 
 
