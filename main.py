@@ -12,7 +12,7 @@ app = FastAPI(title='FastAPI Main', root_path="/Prod/")
 #The root path will be used as the health check endpoint
 @app.get("/", tags=["Health Check"])
 async def root():
-    response_inference = requests.get("http://inference-service:8001/")
+    response_inference = requests.get("http://inference-service:8005/")
     # response_face_emotion = requests.get("http://webapp:8000/")
     # return [response_face_bokeh.content, response_face_emotion.content]
     return response_inference
