@@ -6,8 +6,8 @@ from urllib.parse import unquote
 import boto3
 import os
 
-triton_url = 'triton:8000'
-model = 'yolov7'
+triton_url = 'triton:8001'
+model = 'yolov7-visdrone-finetuned'
 logger = logging.getLogger('inference_service')
 triton_client = TritonClient(model, triton_url)
 
