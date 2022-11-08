@@ -9,7 +9,7 @@ import os
 triton_url = 'triton:8001'
 model = 'yolov7-visdrone-finetuned'
 logger = logging.getLogger('inference_service')
-triton_client = TritonClient(model, triton_url)
+# triton_client = TritonClient(model, triton_url)
 
 #We generate a new FastAPI app in the Prod environment
 #https://fastapi.tiangolo.com/
@@ -39,10 +39,10 @@ async def detect(input_image_file_url: str, output_image_file_url: str, output_l
     print("input_image_file_url: " + unquote(input_image_file_url))
     print("output_image_file_url: " + unquote(output_image_file_url))
     print("output_label_file_url: " + unquote(output_label_file_url))
-    try:
-        triton_client.detectImage(input_image_file=temp_input_filename, output_image_file=temp_output_image_filename, output_label_file=temp_output_label_filename)
-    except Exception as e:
-        print(e)
+    # try:
+    #     triton_client.detectImage(input_image_file=temp_input_filename, output_image_file=temp_output_image_filename, output_label_file=temp_output_label_filename)
+    # except Exception as e:
+    #     print(e)
     return {"input_image_file_url": input_image_file_url, "output_image_file_url": temp_output_image_filename}
 
 def parse_s3_url(s3_path: str):
