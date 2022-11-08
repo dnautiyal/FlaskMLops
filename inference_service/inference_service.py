@@ -6,8 +6,8 @@ from urllib.parse import unquote
 import boto3
 import os
 
-_triton_url = 'triton:8001'
-_model = 'yolov7-visdrone-finetuned'
+my_triton_url = 'triton:8001'
+my_model = 'yolov7-visdrone-finetuned'
 logger = logging.getLogger('inference_service')
 
 
@@ -19,7 +19,7 @@ tmp_output_img_folder = "./tmp_data/output/image"
 tmp_output_lbl_folder = "./tmp_data/output/label"
 
 client = boto3.client('s3')
-triton_client = None
+global triton_client
 
 #The inference-service endpoint receives post requests with the image and returns the transformed image
 @app.get("/detect/", tags=["Object Detect"])
@@ -57,8 +57,8 @@ def parse_s3_url(s3_path: str):
     return bucket_name, key_name_without_file, file_name
 
 def get_triton_client():
-    # if triton_client is None:
-    triton_client = TritonClient(model = _model, triton_url = _triton_url)
+    if triton_client is None:
+        triton_client = TritonClient(model = my_model, triton_url = my_triton_url)
     return triton_client
 
 
