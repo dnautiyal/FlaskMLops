@@ -69,7 +69,7 @@ def retina_ai():
                     logger.info(f'Output file is : {output_image_file_url}')
                     bucket_name, key_name_without_file, file_name = parse_s3_url(unquote(output_image_file_url))
                     # local_output_file_name = f'{tmp_file_folder}{os.sep}{file_name}'
-                    local_output_file_name = "static/images/prediction.jpg"
+                    local_output_file_name = "./static/images/prediction.jpg"
                     if os.path.exists(local_output_file_name):
                         os.remove(local_output_file_name)
                     s3_client.download_file(Bucket = bucket_name, Key = f'{key_name_without_file}/{file_name}', Filename = local_output_file_name)
