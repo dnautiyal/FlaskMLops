@@ -19,7 +19,7 @@ tmp_output_img_folder = "./tmp_data/output/image"
 tmp_output_lbl_folder = "./tmp_data/output/label"
 
 client = boto3.client('s3')
-triton_client = None
+global triton_client
 
 #The inference-service endpoint receives post requests with the image and returns the transformed image
 @app.get("/detect/", tags=["Object Detect"])
@@ -34,16 +34,19 @@ async def detect(input_image_file_url: str, output_image_file_url: str, output_l
     temp_output_image_filename = f'{tmp_output_img_folder}{os.sep}OUT-{file_name}'
     temp_output_label_filename = f'{tmp_output_lbl_folder}{os.sep}OUT-{os.path.splitext(file_name)[0]}.txt'
     client.download_file(Bucket = bucket_name, Key = f'{key_name_without_file}/{file_name}', Filename = temp_input_filename)
-    print(f'created local temp file : {temp_input_filename}')
+    logger.info(f'created local temp file : {temp_input_filename}')
     
-    print(f'bucket_name = {bucket_name}, key_name_without_file = {key_name_without_file}, file_name = {file_name}')
-    print("input_image_file_url: " + unquote(input_image_file_url))
-    print("output_image_file_url: " + unquote(output_image_file_url))
-    print("output_label_file_url: " + unquote(output_label_file_url))
+    logger.info(f'bucket_name = {bucket_name}, key_name_without_file = {key_name_without_file}, file_name = {file_name}')
+    logger.info("input_image_file_url: " + unquote(input_image_file_url))
+    logger.info("output_image_file_url: " + unquote(output_image_file_url))
+    logger.info("output_label_file_url: " + unquote(output_label_file_url))
     try:
         get_triton_client().detectImage(input_image_file=temp_input_filename, output_image_file=temp_output_image_filename, output_label_file=temp_output_label_filename)
+        out_bucket_name, out_key_name_without_file, out_file_name = parse_s3_url(unquote(output_image_file_url))
+        new_out_image_file_name_only = temp_output_image_filename.split('/')[-1]
+        client.upload_file(Bucket = out_bucket_name, Filename = temp_output_image_filename, Key = f'{out_key_name_without_file}/{new_out_image_file_name_only}')
     except Exception as e:
-        print(e)
+        logger.error(e)
     return {"input_image_file_url": input_image_file_url, "output_image_file_url": temp_output_image_filename}
 
 def parse_s3_url(s3_path: str):
