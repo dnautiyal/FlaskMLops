@@ -36,19 +36,9 @@ services:
       [
         "tritonserver",
         "--model-repository=s3://aerial-detection-mlops4/model/Visdrone/Yolov7/triton-deploy/models/",
-        # "--gpus=all",
-        # "--rm",
-        # "--ipc=host",
-        # "--shm-size=1g",
-        # "--ulimit memlock=-1",
-        # "--ulimit stack=67108864",
-        # "-p8000:8000",
-        # "-p8001:8001",
-        # "-p8002:8002",
         "--strict-model-config=false"
-        # "--log-verbose=1"
       ]
-      shm_size: 1g
-      ulimits:
-        memlock: -1
-        stack: 67108864
+    shm_size: 1g
+    ulimits:
+      memlock: -1
+      stack: 67108864
