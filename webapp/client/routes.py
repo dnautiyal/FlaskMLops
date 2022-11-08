@@ -18,6 +18,7 @@ INPUT_S3_KEY =  "inferencing/photos/input"
 OUTPUT_S3_IMAGES_KEY =  "inferencing/photos/output/images"
 OUTPUT_S3_LABELS_KEY =  "inferencing/photos/output/labels"
 tmp_file_folder = "./static/tmp_data"
+os.makedirs("./static/images", exist_ok=True) 
 
 s3_client = boto3.client('s3')
 
@@ -84,10 +85,7 @@ def retina_ai():
                 #     logger.warn ("Error deleting file: %s - %s." % (e.filename, e.strerror))
                 except Exception as e:
                     logger.warn(e)
-                
-            
-            # Get category of prediction
-            category_data = "received file"
+
             # Render the result template
             return render_template('result.html', input_file_name=local_file_name, output_file_name = local_output_file_name)
         return redirect(request.url)
