@@ -23,14 +23,14 @@ services:
   #     context: ./webapp
   #   ports:
   #     - "8080:8000"
-  # triton:
-  #   image: nvcr.io/nvidia/tritonserver:22.02-py3
-  #   env_file:
-  #     - .aws.env
-  #   ports:
-  #     - "8000:8000"
-  #   command:
-  #     [
-  #       "tritonserver",
-  #       "--model-repository=s3://aerial-detection-mlops4/model/Visdrone/Yolov7/triton-deploy/models/"
-  #     ]
+  triton:
+    image: nvcr.io/nvidia/tritonserver:22.02-py3
+    env_file:
+      - .aws.env
+    ports:
+      - "8000:8000"
+    command:
+      [
+        "tritonserver",
+        "--model-repository=s3://aerial-detection-mlops4/model/Visdrone/Yolov7/triton-deploy/models/"
+      ]
