@@ -7,6 +7,8 @@ import boto3
 import os
 import logging
 import requests
+import json
+from urllib.parse import unquote
 
 # ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 ALLOWED_EXTENSIONS = {'jpg'}
@@ -57,12 +59,14 @@ def retina_ai():
                             "output_label_file_url": f's3://{S3_BUCKET}/{OUTPUT_S3_IMAGES_KEY}/OUT-{os.path.splitext(new_file_name)[0]}.txt'
                             }
                     r = requests.get(url = "http://inference-service:8000/detect", params = data)
-                    print(r.status_code)
-                    data = r.json()
-                    print(data)
                     # os.remove(local_file_name)
                     logger.info(f"Successfully handled {new_file_name}")
                     logger.info(r.text)
+                    dict = json.loads(r.text)
+                    output_image_file_url = dict["output_image_file_url"]
+                    bucket_name, key_name_without_file, file_name = parse_s3_url(unquote(output_image_file_url))
+                    local_output_file_name = f'{tmp_file_folder}{os.sep}{file_name}'
+                    s3_client.download_file(Bucket = bucket_name, Key = f'{key_name_without_file}/{file_name}', Filename = local_output_file_name)
                 except requests.exceptions.HTTPError as errh:
                     logger.info("Http Error:",errh)
                 except requests.exceptions.ConnectionError as errc:
@@ -80,6 +84,15 @@ def retina_ai():
             # Get category of prediction
             category_data = "received file"
             # Render the result template
-            return render_template('result.html', category=category_data, file_name = new_file_name)
+            return render_template('result.html', category=category_data, file_name = local_output_file_name)
         return redirect(request.url)
+    
+def parse_s3_url(s3_path: str):
+    s3_path_split = s3_path.split('/')
+    bucket_name = s3_path_split[2]
+    key_name_without_file = '/'.join(s3_path_split[3:-1])
+    file_name = s3_path_split[-1]
+    return bucket_name, key_name_without_file, file_name
+
+d
 
