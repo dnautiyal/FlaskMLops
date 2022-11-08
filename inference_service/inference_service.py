@@ -42,6 +42,7 @@ async def detect(input_image_file_url: str, output_image_file_url: str, output_l
     logger.info("output_label_file_url: " + unquote(output_label_file_url))
     try:
         get_triton_client().detectImage(input_image_file=temp_input_filename, output_image_file=temp_output_image_filename, output_label_file=temp_output_label_filename)
+        
         out_bucket_name, out_key_name_without_file, out_file_name = parse_s3_url(unquote(output_image_file_url))
         new_out_image_file_name_only = temp_output_image_filename.split('/')[-1]
         s3_client.upload_file(Bucket = out_bucket_name, Filename = temp_output_image_filename, Key = f'{out_key_name_without_file}/{new_out_image_file_name_only}')

@@ -73,8 +73,8 @@ def retina_ai():
                     logger.info("OOps: Something Else",err)
                 # except OSError as e:
                 #     logger.warn ("Error deleting file: %s - %s." % (e.filename, e.strerror))
-                # except Exception as e:
-                #     logger.warn(e)
+                except Exception as e:
+                    logger.warn(e)
                 
             
             # Get category of prediction
