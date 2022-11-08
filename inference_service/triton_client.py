@@ -23,8 +23,10 @@ class TritonClient:
         Args:
             - triton_url (str): path to the triton server
         """
-        # self.FLAGS = FLAGS_PARAM
         self.model = model #Inference model name, default yolov7
+        self.model_info = False
+        self.client_timeout = None
+
         self.logger = logging.getLogger(__name__)
         # Create server context
         try:
@@ -48,11 +50,11 @@ class TritonClient:
             self.logger.error("FAILED : is_server_ready")
             sys.exit(1)
 
-        if not self.triton_client.is_model_ready(self.FLAGS.model):
+        if not self.triton_client.is_model_ready(self.model):
             self.logger.error("FAILED : is_model_ready")
             sys.exit(1)
 
-        if self.FLAGS.model_info:
+        if self.model_info:
             # Model metadata
             try:
                 self.metadata = self.triton_client.get_model_metadata(model)
@@ -79,7 +81,6 @@ class TritonClient:
                 sys.exit(1)
 
     def detectImage(self, input_image_file, output_image_file, output_label_file, image_width = 960, image_height = 544):
-        # if self.FLAGS.mode == 'image':
         #     self.logger.info("Running in 'image' mode")
         if not input_image_file:
             self.logger.warn("FAILED: no input image")
@@ -107,11 +108,11 @@ class TritonClient:
         inputs[0].set_data_from_numpy(input_image_buffer)
 
         self.logger.info("Invoking inference...")
-        results = self.triton_client.infer(model_name=self.FLAGS.model,
+        results = self.triton_client.infer(model_name=self.model,
                                       inputs=inputs,
                                       outputs=outputs,
-                                      client_timeout=self.FLAGS.client_timeout)
-        if self.FLAGS.model_info:
+                                      client_timeout=self.client_timeout)
+        if self.model_info:
             statistics = self.triton_client.get_inference_statistics(model_name=self.model)
             if len(statistics.model_stats) != 1:
                 self.logger.warn("FAILED: get_inference_statistics")
