@@ -17,8 +17,10 @@ S3_BUCKET = "aerial-detection-mlops4"
 INPUT_S3_KEY =  "inferencing/photos/input"
 OUTPUT_S3_IMAGES_KEY =  "inferencing/photos/output/images"
 OUTPUT_S3_LABELS_KEY =  "inferencing/photos/output/labels"
-tmp_file_folder = "./static/tmp_data"
-os.makedirs("./static/images", exist_ok=True) 
+
+ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
+tmp_file_folder = f"{ROOT_DIR}/static/tmp_data"
+os.makedirs(tmp_file_folder, exist_ok=True) 
 
 s3_client = boto3.client('s3')
 
@@ -51,7 +53,7 @@ def aerial_ai():
             img = request.files['file']
             if img:
                 try:
-                    os.makedirs(tmp_file_folder, exist_ok=True) 
+                    # os.makedirs(tmp_file_folder, exist_ok=True) 
                     local_file_name = f'{tmp_file_folder}/{new_file_name}'
                     img.save(local_file_name)
                     s3_client.upload_file(Bucket = S3_BUCKET, Filename = local_file_name, Key = f'{INPUT_S3_KEY}/{new_file_name}')
@@ -59,23 +61,23 @@ def aerial_ai():
                             "output_image_file_url": f's3://{S3_BUCKET}/{OUTPUT_S3_IMAGES_KEY}/OUT-{new_file_name}',
                             "output_label_file_url": f's3://{S3_BUCKET}/{OUTPUT_S3_IMAGES_KEY}/OUT-{os.path.splitext(new_file_name)[0]}.txt'
                             }
-                    r = requests.get(url = "http://inference-service:8000/detect", params = data)
+                    response = requests.get(url = "http://inference-service:8000/detect", params = data)
                     # os.remove(local_file_name)
                     logger.info(f"Successfully handled {new_file_name}")
-                    logger.info(f'URL for static file:{url_for("static", filename ="images/prediction.png")}')
-                    dict = json.loads(r.text)
+                    # logger.info(f'URL for static file:{url_for("static", filename ="images/prediction.png")}')
+                    dict = json.loads(response.text)
                     output_image_file_url = dict["output_image_file_url"]
                     
                     logger.info(f'Output file is : {output_image_file_url}')
-                    bucket_name, key_name_without_file, file_name = parse_s3_url(unquote(output_image_file_url))
+                    bucket_name, key_name_without_file, output_file_name = parse_s3_url(unquote(output_image_file_url))
                     # local_output_file_name = f'{tmp_file_folder}{os.sep}{file_name}'
-                    local_output_file_name = "/static/images/prediction1.jpg"
-                    ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
-                    local_output_file_path = os.path.join(ROOT_DIR + local_output_file_name)
-                    if os.path.exists(local_output_file_path):
-                        os.remove(local_output_file_path)
+                    local_output_file_name = f"/static/images/{output_file_name}"
+                    
+                    local_output_file_path = os.path.join(tmp_file_folder, output_file_name)
+                    # if os.path.exists(local_output_file_path):
+                    #     os.remove(local_output_file_path)
                     logger.info(f'Out file path is: {local_output_file_path}')
-                    s3_client.download_file(Bucket = bucket_name, Key = f'{key_name_without_file}/{file_name}', Filename = local_output_file_path)
+                    s3_client.download_file(Bucket = bucket_name, Key = f'{key_name_without_file}/{output_file_name}', Filename = local_output_file_path)
                 except requests.exceptions.HTTPError as errh:
                     logger.info("Http Error:",errh)
                 except requests.exceptions.ConnectionError as errc:
@@ -100,15 +102,6 @@ def parse_s3_url(s3_path: str):
     file_name = s3_path_split[-1]
     return bucket_name, key_name_without_file, file_name
 
-# def save_image_to_file(img, save_image_filename='/static/images/input.jpeg'):
-#     """Plot the input image
-#     Args:
-#         img [jpg]: image file
-#     """
-#     read_img = mpimg.imread(img)
-#     ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
-#     path = os.path.join(ROOT_DIR + save_image_filename)
-#     plt.imsave(path, read_img)
-#     return path
+
 
 
