@@ -19,8 +19,8 @@ OUTPUT_S3_IMAGES_KEY =  "inferencing/photos/output/images"
 OUTPUT_S3_LABELS_KEY =  "inferencing/photos/output/labels"
 
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
-tmp_file_folder = f"{ROOT_DIR}/static/tmp_data"
-os.makedirs(tmp_file_folder, exist_ok=True) 
+tmp_file_folder = "/static/tmp_data"
+os.makedirs(os.path.join(ROOT_DIR, tmp_file_folder), exist_ok=True) 
 
 s3_client = boto3.client('s3')
 
@@ -71,7 +71,7 @@ def aerial_ai():
                     logger.info(f'Output file is : {output_image_file_url}')
                     bucket_name, key_name_without_file, output_file_name = parse_s3_url(unquote(output_image_file_url))
                     # local_output_file_name = f'{tmp_file_folder}{os.sep}{file_name}'
-                    local_output_file_name = f"/static/images/{output_file_name}"
+                    local_output_file_name = f"{tmp_file_folder}/{output_file_name}"
                     
                     local_output_file_path = os.path.join(tmp_file_folder, output_file_name)
                     # if os.path.exists(local_output_file_path):
