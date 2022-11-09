@@ -20,7 +20,7 @@ OUTPUT_S3_LABELS_KEY =  "inferencing/photos/output/labels"
 
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 tmp_file_folder_name = "/static/tmp_data"
-tmp_file_folder = os.path.join(ROOT_DIR, tmp_file_folder_name)
+tmp_file_folder = f'{ROOT_DIR}{tmp_file_folder_name}'
 os.makedirs(tmp_file_folder, exist_ok=True) 
 
 s3_client = boto3.client('s3')
