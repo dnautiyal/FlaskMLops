@@ -27,7 +27,7 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 @app.route('/', methods=['GET', 'POST'])
-def retina_ai():
+def aerial_ai():
     # Write the GET Method to get the index file
     if request.method == 'GET':
         return render_template('index.html')
@@ -62,7 +62,7 @@ def retina_ai():
                     r = requests.get(url = "http://inference-service:8000/detect", params = data)
                     # os.remove(local_file_name)
                     logger.info(f"Successfully handled {new_file_name}")
-                    logger.info(r.text)
+                    logger.info(f'URL for static file:{url_for("static", filename ="images/prediction.png")}')
                     dict = json.loads(r.text)
                     output_image_file_url = dict["output_image_file_url"]
                     
