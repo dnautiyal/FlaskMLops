@@ -55,6 +55,17 @@
         .fb-logo{
             width : 372px;
             height: auto;
+        }
+        .link_button {
+            font: bold 20px Arial;
+            text-decoration: none;
+            background-color: #EEEEEE;
+            color: rgb(173,8,8);
+            padding: 2px 6px 2px 6px;
+            border-top: 1px solid #CCCCCC;
+            border-right: 1px solid #333333;
+            border-bottom: 1px solid #333333;
+            border-left: 1px solid #CCCCCC;
         }  
     </style>
     <script type="text/javascript">
@@ -78,7 +89,8 @@
                     <img src="data:image/jpg;base64,{{ output_file_name }}" width="960">
                 {% endif %} -->
             <br>
-            <a style="color:rgb(173, 8, 8);font-size:20px;" href="javascript:history.back()">New Analysis</a>
+            <!-- <a style="color:rgb(173, 8, 8);font-size:20px; font-weight: bold;" href="javascript:history.back()">New Analysis</a> -->
+            <a class="link_button" href="javascript:history.back()">New Analysis</a>
         </div>
         <div class="bottomright">
             <img src="/static/images/Fourthbrain-removebg-preview.png" alt="FourthBrain:  MLE-6/Capstone Project">            
