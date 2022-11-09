@@ -90,7 +90,7 @@ def aerial_ai():
                     logger.warn(e)
 
             # Render the result template
-            return render_template('result.html', input_file_name=local_file_name, output_file_name = local_output_file_name)
+            return render_template('result.html', input_file_name=file.filename, output_file_name = local_output_file_name)
         return redirect(request.url)
     
 def parse_s3_url(s3_path: str):
