@@ -27,7 +27,7 @@ class TritonClient:
         self.model_info = False
         self.client_timeout = None
 
-        self.logger = logging.getLogger(__name__)
+        self.logger = logging.getLogger("TritonClient")
         # Create server context
         try:
             self.triton_client = grpcclient.InferenceServerClient(
