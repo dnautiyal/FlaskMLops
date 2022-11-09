@@ -9,6 +9,7 @@ import logging
 import requests
 import json
 from urllib.parse import unquote
+import cv2
 
 # ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 ALLOWED_EXTENSIONS = {'jpg'}
@@ -55,9 +56,9 @@ def aerial_ai():
             if img:
                 try:
                     # os.makedirs(tmp_file_folder, exist_ok=True) 
-                    local_file_name = f'{tmp_file_folder}/{new_file_name}'
-                    img.save(local_file_name)
-                    s3_client.upload_file(Bucket = S3_BUCKET, Filename = local_file_name, Key = f'{INPUT_S3_KEY}/{new_file_name}')
+                    local_input_file_path = os.path.join(tmp_file_folder, new_file_name)
+                    img.save(local_input_file_path)
+                    s3_client.upload_file(Bucket = S3_BUCKET, Filename = local_input_file_path, Key = f'{INPUT_S3_KEY}/{new_file_name}')
                     data = {"input_image_file_url": f's3://{S3_BUCKET}/{INPUT_S3_KEY}/{new_file_name}',
                             "output_image_file_url": f's3://{S3_BUCKET}/{OUTPUT_S3_IMAGES_KEY}/OUT-{new_file_name}',
                             "output_label_file_url": f's3://{S3_BUCKET}/{OUTPUT_S3_IMAGES_KEY}/OUT-{os.path.splitext(new_file_name)[0]}.txt'
@@ -72,13 +73,17 @@ def aerial_ai():
                     logger.info(f's3-output file is : {output_image_file_url}')
                     bucket_name, key_name_without_file, output_file_name = parse_s3_url(unquote(output_image_file_url))
                     # local_output_file_name = f'{tmp_file_folder}{os.sep}{file_name}'
-                    local_output_file_name = f"{tmp_file_folder_name}/{output_file_name}"
+                    
                     
                     local_output_file_path = os.path.join(tmp_file_folder, output_file_name)
-                    # if os.path.exists(local_output_file_path):
-                    #     os.remove(local_output_file_path)
+
                     logger.info(f'Local output-file path is: {local_output_file_path}')
                     s3_client.download_file(Bucket = bucket_name, Key = f'{key_name_without_file}/{output_file_name}', Filename = local_output_file_path)
+                    combined_out_file_path = create_combined_image(local_input_file_path, local_output_file_path)
+                    logger.info(f'Combined output-file path is: {local_output_file_path}')
+                    local_output_file_name = f"{tmp_file_folder_name}/{combined_out_file_path.split('/')[-1]}"
+                    # if os.path.exists(local_output_file_path):
+                    #     os.remove(local_output_file_path)
                 except requests.exceptions.HTTPError as errh:
                     logger.info("Http Error:",errh)
                 except requests.exceptions.ConnectionError as errc:
@@ -102,6 +107,16 @@ def parse_s3_url(s3_path: str):
     key_name_without_file = '/'.join(s3_path_split[3:-1])
     file_name = s3_path_split[-1]
     return bucket_name, key_name_without_file, file_name
+
+def create_combined_image(input_file_save_location, output_file_save_location):
+    img1 = cv2.imread(input_file_save_location)
+    img2 = cv2.imread(output_file_save_location)
+    h_img = cv2.hconcat([img1, img2])
+    combined_out_file_location = output_file_save_location.replace('/OUT-', '/COMBINED-OUT-')
+    h_img.save(combined_out_file_location)
+    return combined_out_file_location
+
+
 
 
 
