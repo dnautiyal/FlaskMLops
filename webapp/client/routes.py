@@ -69,10 +69,13 @@ def aerial_ai():
                     logger.info(f'Output file is : {output_image_file_url}')
                     bucket_name, key_name_without_file, file_name = parse_s3_url(unquote(output_image_file_url))
                     # local_output_file_name = f'{tmp_file_folder}{os.sep}{file_name}'
-                    local_output_file_name = "./static/images/prediction.jpg"
-                    if os.path.exists(local_output_file_name):
-                        os.remove(local_output_file_name)
-                    s3_client.download_file(Bucket = bucket_name, Key = f'{key_name_without_file}/{file_name}', Filename = local_output_file_name)
+                    local_output_file_name = "/static/images/prediction1.jpg"
+                    ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
+                    local_output_file_path = os.path.join(ROOT_DIR + local_output_file_name)
+                    if os.path.exists(local_output_file_path):
+                        os.remove(local_output_file_path)
+                    logger.info(f'Out file path is: {local_output_file_path}')
+                    s3_client.download_file(Bucket = bucket_name, Key = f'{key_name_without_file}/{file_name}', Filename = local_output_file_path)
                 except requests.exceptions.HTTPError as errh:
                     logger.info("Http Error:",errh)
                 except requests.exceptions.ConnectionError as errc:
@@ -96,5 +99,16 @@ def parse_s3_url(s3_path: str):
     key_name_without_file = '/'.join(s3_path_split[3:-1])
     file_name = s3_path_split[-1]
     return bucket_name, key_name_without_file, file_name
+
+# def save_image_to_file(img, save_image_filename='/static/images/input.jpeg'):
+#     """Plot the input image
+#     Args:
+#         img [jpg]: image file
+#     """
+#     read_img = mpimg.imread(img)
+#     ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
+#     path = os.path.join(ROOT_DIR + save_image_filename)
+#     plt.imsave(path, read_img)
+#     return path
 
 
