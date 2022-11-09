@@ -68,7 +68,7 @@ def aerial_ai():
                     dict = json.loads(response.text)
                     output_image_file_url = dict["output_image_file_url"]
                     
-                    logger.info(f'Local-output file is : {output_image_file_url}')
+                    logger.info(f's3-output file is : {output_image_file_url}')
                     bucket_name, key_name_without_file, output_file_name = parse_s3_url(unquote(output_image_file_url))
                     # local_output_file_name = f'{tmp_file_folder}{os.sep}{file_name}'
                     local_output_file_name = f"{tmp_file_folder}/{output_file_name}"
@@ -76,7 +76,7 @@ def aerial_ai():
                     local_output_file_path = os.path.join(tmp_file_folder, output_file_name)
                     # if os.path.exists(local_output_file_path):
                     #     os.remove(local_output_file_path)
-                    logger.info(f'Out file path is: {local_output_file_path}')
+                    logger.info(f'Local output-file path is: {local_output_file_path}')
                     s3_client.download_file(Bucket = bucket_name, Key = f'{key_name_without_file}/{output_file_name}', Filename = local_output_file_path)
                 except requests.exceptions.HTTPError as errh:
                     logger.info("Http Error:",errh)
