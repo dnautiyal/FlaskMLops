@@ -113,7 +113,7 @@ def create_combined_image(input_file_save_location, output_file_save_location):
     img2 = cv2.imread(output_file_save_location)
     h_img = cv2.hconcat([img1, img2])
     combined_out_file_location = output_file_save_location.replace('/OUT-', '/COMBINED-OUT-')
-    h_img.save(combined_out_file_location)
+    cv2.imwrite(combined_out_file_location, h_img)
     return combined_out_file_location
 
 
