@@ -20,9 +20,14 @@ app = FastAPI(title='Aerial Detection Inference Service')
 tmp_file_folder_input = "./tmp_data/input"
 tmp_output_img_folder = "./tmp_data/output/image"
 tmp_output_lbl_folder = "./tmp_data/output/label"
+
+tmp_folder_video_input = "./tmp_data/video/input"
+tmp_folder_video_output = "./tmp_data/video/output"
 os.makedirs(tmp_file_folder_input, exist_ok=True)
 os.makedirs(tmp_output_img_folder, exist_ok=True)
 os.makedirs(tmp_output_lbl_folder, exist_ok=True)
+os.makedirs(tmp_folder_video_input, exist_ok=True)
+os.makedirs(tmp_folder_video_output, exist_ok=True)
 s3_client = boto3.client('s3')
 
 triton_client = None
@@ -53,7 +58,7 @@ async def detect(input_image_file_url: str, output_image_folder_url: str, output
     try:
         start_time = time.time()
         get_triton_client().detect_image(input_image_file=temp_input_image_filename, output_image_file=temp_output_image_filename, output_label_file=temp_output_label_filename)
-        logger.info(f"Time taken to run detectImage method: {int((time.time()-start_time)*1000)} milli seconds")
+        logger.info(f"Time taken to run detect_image method: {int((time.time()-start_time)*1000)} milli seconds")
         out_bucket_name, out_key_name_without_file, new_out_image_file_name_only = parse_s3_url(f"{unquote(output_image_folder_url)}/{temp_output_image_filename.split('/')[-1]}")
         s3_client.upload_file(Bucket = out_bucket_name, Filename = temp_output_image_filename, Key = f'{out_key_name_without_file}/{new_out_image_file_name_only}')
         if os.path.exists(temp_output_label_filename):
@@ -66,6 +71,36 @@ async def detect(input_image_file_url: str, output_image_folder_url: str, output
     return {"input_image_file_url": input_image_file_url,
              "output_image_file_url": f's3://{out_bucket_name}/{out_key_name_without_file}/{new_out_image_file_name_only}',
              "output_label_file_url": f's3://{out_label_bucket_name}/{out_label_key_name_without_file}/{new_out_label_file_name_only}'
+            }
+
+#The inference-service endpoint receives post requests with the image and returns the transformed video
+@app.get("/detect_video/", tags=["Object Detect Video"])
+async def detect(input_video_file_url: str, output_video_folder_url: str):
+    #We read the file and decode it
+    # s3://aerial-detection-mlops4/inferencing/photos/input/19d09312c52945f8bcdd283c627d9b44-9999942_00000_d_0000214.jpg
+    bucket_name, key_name_without_file, file_name = parse_s3_url(unquote(input_video_file_url))
+    
+    temp_input_video_filename = f'{tmp_folder_video_input}{os.sep}{file_name}'
+    temp_output_video_filename = f'{tmp_folder_video_output}{os.sep}OUT-{file_name}'
+    s3_client.download_file(Bucket = bucket_name, Key = f'{key_name_without_file}/{file_name}', Filename = temp_input_video_filename)
+    if logger.isEnabledFor(level=logging.DEBUG):
+        logger.debug(f'created local temp file : {temp_input_video_filename}')        
+        logger.debug(f'bucket_name = {bucket_name}, key_name_without_file = {key_name_without_file}, file_name = {file_name}')
+        logger.debug("input_image_file_url: " + unquote(input_video_file_url))
+        logger.debug(f"output_image_file_url: {unquote(output_video_folder_url)}")
+
+    try:
+        start_time = time.time()
+        get_triton_client().detect_video(input_image_file=temp_input_video_filename, output_image_file=temp_output_video_filename)
+        logger.info(f"Time taken to run detect_video method: {int((time.time()-start_time)*1000)} milli seconds")
+        out_bucket_name, out_key_name_without_file, new_out_image_file_name_only = parse_s3_url(f"{unquote(output_video_folder_url)}/{temp_output_video_filename.split('/')[-1]}")
+        s3_client.upload_file(Bucket = out_bucket_name, Filename = temp_output_video_filename, Key = f'{out_key_name_without_file}/{new_out_image_file_name_only}')
+    except Exception as e:
+        logger.warn("Exception encountered: " + str(e))
+    finally:
+        delete_temp_files([temp_input_video_filename, temp_output_video_filename])
+    return {"input_image_file_url": input_video_file_url,
+             "output_image_file_url": f's3://{out_bucket_name}/{out_key_name_without_file}/{new_out_image_file_name_only}'
             }
 
 def parse_s3_url(s3_path: str):
