@@ -158,7 +158,7 @@ class TritonClient:
                 with open(output_label_file, 'w') as f:
                     for row in output_labels:
                         f.writelines(row)
-                logger.info(f"Written {output_label_file}}")
+                logger.info(f"Written {output_label_file}")
             except Exception as e:
                 logger.warn(f"{output_label_file} could not be written. Error: {str(e)}")
 
