@@ -99,8 +99,8 @@ async def detect_video(input_video_file_url: str, output_video_folder_url: str):
         logger.warn("Exception encountered: " + str(e))
     finally:
         delete_temp_files([temp_input_video_filename, temp_output_video_filename])
-    return {"input_image_file_url": input_video_file_url,
-             "output_image_file_url": f's3://{out_bucket_name}/{out_key_name_without_file}/{new_out_image_file_name_only}'
+    return {"input_video_file_url": input_video_file_url,
+             "output_video_file_url": f's3://{out_bucket_name}/{out_key_name_without_file}/{new_out_image_file_name_only}'
             }
 
 def parse_s3_url(s3_path: str):

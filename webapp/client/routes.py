@@ -56,7 +56,7 @@ def aerial_ai():
             local_output_file_name = handle_detect_photo(file)
             return render_template('result.html', input_file_name=file.filename, output_file_name = local_output_file_name, show_photo=True)
         elif file and allowed_video_file(file.filename):
-            local_video_output_file_name = handle_detect_photo(file)
+            local_video_output_file_name = handle_detect_video(file)
             return render_template('result.html', input_file_name=file.filename, output_file_name = local_video_output_file_name, show_photo=False)
             
         return redirect(request.url)
@@ -136,7 +136,7 @@ def handle_detect_video(file):
             logger.info(f"Successfully handled {new_video_file_name}")
             # logger.info(f'URL for static file:{url_for("static", filename ="images/prediction.png")}')
             dict = json.loads(response.text)
-            output_video_file_url = dict["output_image_file_url"]
+            output_video_file_url = dict["output_video_file_url"]
             logger.info(f's3-output image-file is : {output_video_file_url}')
             bucket_name, key_name_without_file, output_file_name = parse_s3_url(unquote(output_video_file_url))
           
