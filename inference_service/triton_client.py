@@ -219,7 +219,7 @@ class TritonClient:
             counter += 1
 
             for box in detected_objects:
-                logger.info(f"{VisDroneLabels(box.classID).name}: {box.confidence}")
+                logger.debug(f"{VisDroneLabels(box.classID).name}: {box.confidence}")
                 frame = render_box(frame, box.box(), color=tuple(RAND_COLORS[box.classID % 64].tolist()))
                 size = get_text_size(frame, f"{VisDroneLabels(box.classID).name}: {box.confidence:.2f}", normalised_scaling=0.6)
                 frame = render_filled_box(frame, (box.x1 - 3, box.y1 - 3, box.x1 + size[0], box.y1 + size[1]), color=(220, 220, 220))
