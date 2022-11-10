@@ -50,61 +50,67 @@ def aerial_ai():
         if file.filename == '':
             flash('No selected file')
             return redirect(request.url)
+        
         if file and allowed_file(file.filename):
-            # Assign an id to the asynchronous task
-            task_id = uuid.uuid4().hex
-            new_file_name = f'{task_id}-{file.filename}'
-            img = request.files['file']
-            if img:
-                try:
-                    # os.makedirs(tmp_file_folder, exist_ok=True) 
-                    local_input_file_path = os.path.join(tmp_file_folder, new_file_name)
-                    img.save(local_input_file_path)
-                    s3_client.upload_file(Bucket = S3_BUCKET, Filename = local_input_file_path, Key = f'{INPUT_S3_KEY}/{new_file_name}')
-                    data = {"input_image_file_url": f's3://{S3_BUCKET}/{INPUT_S3_KEY}/{new_file_name}',
-                            "output_image_folder_url": f's3://{S3_BUCKET}/{OUTPUT_S3_IMAGES_KEY}',
-                            "output_label_folder_url": f's3://{S3_BUCKET}/{OUTPUT_S3_LABELS_KEY}'
-                            }
-                    
-                    response = requests.get(url = INFERENCE_SERVICE_ENDPOINT, params = data)
-                    # os.remove(local_file_name)
-                    logger.info(f"Successfully handled {new_file_name}")
-                    # logger.info(f'URL for static file:{url_for("static", filename ="images/prediction.png")}')
-                    dict = json.loads(response.text)
-                    output_image_file_url = dict["output_image_file_url"]
-                    output_label_file_url = dict["output_label_file_url"]
-                    logger.info(f's3-output image-file is : {output_image_file_url}')
-                    logger.info(f's3-output label-file is : {output_label_file_url}')
-                    bucket_name, key_name_without_file, output_file_name = parse_s3_url(unquote(output_image_file_url))
-                    # local_output_file_name = f'{tmp_file_folder}{os.sep}{file_name}'
-                    
-                    
-                    local_output_file_path = os.path.join(tmp_file_folder, output_file_name)
-
-                    logger.info(f'Local output-file path is: {local_output_file_path}')
-                    s3_client.download_file(Bucket = bucket_name, Key = f'{key_name_without_file}/{output_file_name}', Filename = local_output_file_path)
-                    combined_out_file_path = create_combined_image(local_input_file_path, local_output_file_path)
-                    logger.info(f'Combined output-file path is: {local_output_file_path}')
-                    local_output_file_name = f"{tmp_file_folder_name}/{combined_out_file_path.split('/')[-1]}"
-                    # if os.path.exists(local_output_file_path):
-                    #     os.remove(local_output_file_path)
-                except requests.exceptions.HTTPError as errh:
-                    logger.info("Http Error:",errh)
-                except requests.exceptions.ConnectionError as errc:
-                    logger.info("Error Connecting:",errc)
-                except requests.exceptions.Timeout as errt:
-                    logger.info("Timeout Error:",errt)
-                except requests.exceptions.RequestException as err:
-                    logger.info("OOps: Something Else",err)
-                # except OSError as e:
-                #     logger.warn ("Error deleting file: %s - %s." % (e.filename, e.strerror))
-                except Exception as e:
-                    logger.warn(e)
-
-            # Render the result template
+            local_output_file_name = handle_detect_photo(file)
             return render_template('result.html', input_file_name=file.filename, output_file_name = local_output_file_name)
+            
         return redirect(request.url)
-    
+
+def handle_detect_photo(file):
+    # Assign an id to the asynchronous task
+    task_id = uuid.uuid4().hex
+    new_file_name = f'{task_id}-{file.filename}'
+    img = request.files['file']
+    if img:
+        try:
+            # os.makedirs(tmp_file_folder, exist_ok=True) 
+            local_input_file_path = os.path.join(tmp_file_folder, new_file_name)
+            img.save(local_input_file_path)
+            s3_client.upload_file(Bucket = S3_BUCKET, Filename = local_input_file_path, Key = f'{INPUT_S3_KEY}/{new_file_name}')
+            data = {"input_image_file_url": f's3://{S3_BUCKET}/{INPUT_S3_KEY}/{new_file_name}',
+                    "output_image_folder_url": f's3://{S3_BUCKET}/{OUTPUT_S3_IMAGES_KEY}',
+                    "output_label_folder_url": f's3://{S3_BUCKET}/{OUTPUT_S3_LABELS_KEY}'
+                    }
+            
+            response = requests.get(url = INFERENCE_SERVICE_ENDPOINT, params = data)
+            # os.remove(local_file_name)
+            logger.info(f"Successfully handled {new_file_name}")
+            # logger.info(f'URL for static file:{url_for("static", filename ="images/prediction.png")}')
+            dict = json.loads(response.text)
+            output_image_file_url = dict["output_image_file_url"]
+            output_label_file_url = dict["output_label_file_url"]
+            logger.info(f's3-output image-file is : {output_image_file_url}')
+            logger.info(f's3-output label-file is : {output_label_file_url}')
+            bucket_name, key_name_without_file, output_file_name = parse_s3_url(unquote(output_image_file_url))
+            # local_output_file_name = f'{tmp_file_folder}{os.sep}{file_name}'
+            
+            
+            local_output_file_path = os.path.join(tmp_file_folder, output_file_name)
+
+            logger.info(f'Local output-file path is: {local_output_file_path}')
+            s3_client.download_file(Bucket = bucket_name, Key = f'{key_name_without_file}/{output_file_name}', Filename = local_output_file_path)
+            combined_out_file_path = create_combined_image(local_input_file_path, local_output_file_path)
+            logger.info(f'Combined output-file path is: {local_output_file_path}')
+            local_output_file_name = f"{tmp_file_folder_name}/{combined_out_file_path.split('/')[-1]}"
+            # if os.path.exists(local_output_file_path):
+            #     os.remove(local_output_file_path)
+        except requests.exceptions.HTTPError as errh:
+            logger.info("Http Error:",errh)
+        except requests.exceptions.ConnectionError as errc:
+            logger.info("Error Connecting:",errc)
+        except requests.exceptions.Timeout as errt:
+            logger.info("Timeout Error:",errt)
+        except requests.exceptions.RequestException as err:
+            logger.info("OOps: Something Else",err)
+        # except OSError as e:
+        #     logger.warn ("Error deleting file: %s - %s." % (e.filename, e.strerror))
+        except Exception as e:
+            logger.warn(e)
+
+    # Render the result template
+    return local_output_file_name
+               
 def parse_s3_url(s3_path: str):
     s3_path_split = s3_path.split('/')
     bucket_name = s3_path_split[2]
