@@ -108,7 +108,7 @@ def handle_detect_photo(file):
         except Exception as e:
             logger.warn(e)
 
-    # Render the result template
+    # return the local_output_file_name
     return local_output_file_name
                
 def parse_s3_url(s3_path: str):
