@@ -115,7 +115,7 @@ class TritonClient:
                                       inputs=inputs,
                                       outputs=outputs,
                                       client_timeout=self.client_timeout)
-        logger.info(f"Time taken to infer by TritonServer: {(time.time()-start_time)*1000} milli seconds")
+        logger.info(f"Time taken to infer by TritonServer: {int((time.time()-start_time)*1000)} milli seconds")
         if self.model_info:
             statistics = self.triton_client.get_inference_statistics(model_name=self.model)
             if len(statistics.model_stats) != 1:

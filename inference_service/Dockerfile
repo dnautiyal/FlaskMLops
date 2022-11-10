@@ -6,4 +6,4 @@ RUN  pip3 install -r requirements.txt
 COPY . .
 # EXPOSE 8001
 # CMD ["uvicorn", "inference_service:app","--host", "0.0.0.0", "--port", "8001"]
-CMD ["uvicorn", "inference_service:app","--host", "0.0.0.0"]
+CMD ["uvicorn", "inference_service:app","--host", "0.0.0.0", "--log-config", "logging.conf"]
