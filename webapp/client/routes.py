@@ -27,7 +27,8 @@ VIDEO_INPUT_S3_KEY =  "inferencing/videos/input"
 VIDEO_OUTPUT_S3_IMAGES_KEY =  "inferencing/videos/output"
 
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
-tmp_file_folder_name = "/static/tmp_data"
+# tmp_file_folder_name = "/static/tmp_data"
+tmp_file_folder_name = "/static"
 tmp_file_folder = f'{ROOT_DIR}{tmp_file_folder_name}'
 os.makedirs(tmp_file_folder, exist_ok=True) 
 
@@ -147,8 +148,8 @@ def handle_detect_video(file):
             local_output_file_path = os.path.join(tmp_file_folder, output_file_name)
             logger.info(f'Local output-file path is: {local_output_file_path}')
             s3_client.download_file(Bucket = bucket_name, Key = f'{key_name_without_file}/{output_file_name}', Filename = local_output_file_path)
-            local_output_file_name = f"{tmp_file_folder_name}/{local_output_file_path.split('/')[-1]}"
-            # local_output_file_name = local_output_file_path.split('/')[-1]
+            # local_output_file_name = f"{tmp_file_folder_name}/{local_output_file_path.split('/')[-1]}"
+            local_output_file_name = local_output_file_path.split('/')[-1]
         except requests.exceptions.HTTPError as errh:
             logger.info("Http Error:",errh)
         except requests.exceptions.ConnectionError as errc:
