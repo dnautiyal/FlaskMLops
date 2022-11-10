@@ -72,8 +72,9 @@ def aerial_ai():
                     # logger.info(f'URL for static file:{url_for("static", filename ="images/prediction.png")}')
                     dict = json.loads(response.text)
                     output_image_file_url = dict["output_image_file_url"]
-                    
-                    logger.info(f's3-output file is : {output_image_file_url}')
+                    output_label_file_url = dict["output_label_file_url"]
+                    logger.info(f's3-output image-file is : {output_image_file_url}')
+                    logger.info(f's3-output label-file is : {output_label_file_url}')
                     bucket_name, key_name_without_file, output_file_name = parse_s3_url(unquote(output_image_file_url))
                     # local_output_file_name = f'{tmp_file_folder}{os.sep}{file_name}'
                     

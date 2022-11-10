@@ -57,13 +57,16 @@ async def detect(input_image_file_url: str, output_image_folder_url: str, output
         out_bucket_name, out_key_name_without_file, new_out_image_file_name_only = parse_s3_url(f"{unquote(output_image_folder_url)}/{temp_output_image_filename.split('/')[-1]}")
         s3_client.upload_file(Bucket = out_bucket_name, Filename = temp_output_image_filename, Key = f'{out_key_name_without_file}/{new_out_image_file_name_only}')
         if os.path.exists(temp_output_label_filename):
-            out_bucket_name, out_label_key_name_without_file, new_out_label_file_name_only = parse_s3_url(unquote(output_label_folder_url))
-            s3_client.upload_file(Bucket = out_bucket_name, Filename = temp_output_label_filename, Key = f'{out_label_key_name_without_file}/{new_out_label_file_name_only}')
+            out_label_bucket_name, out_label_key_name_without_file, new_out_label_file_name_only = parse_s3_url(f"{unquote(output_label_folder_url)}/{temp_output_label_filename.split('/')[-1]}")
+            s3_client.upload_file(Bucket = out_label_bucket_name, Filename = temp_output_label_filename, Key = f'{out_label_key_name_without_file}/{new_out_label_file_name_only}')
     except Exception as e:
         logger.warn("Exception encountered: " + str(e))
     finally:
         delete_temp_files([temp_input_image_filename, temp_output_image_filename, temp_output_label_filename])
-    return {"input_image_file_url": input_image_file_url, "output_image_file_url": f's3://{out_bucket_name}/{out_key_name_without_file}/{new_out_image_file_name_only}'}
+    return {"input_image_file_url": input_image_file_url,
+             "output_image_file_url": f's3://{out_bucket_name}/{out_key_name_without_file}/{new_out_image_file_name_only}',
+             "output_label_file_url": f's3://{out_label_bucket_name}/{out_label_key_name_without_file}/{new_out_label_file_name_only}'
+            }
 
 def parse_s3_url(s3_path: str):
     s3_path_split = s3_path.split('/')
