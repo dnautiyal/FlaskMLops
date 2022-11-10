@@ -26,7 +26,7 @@ class TritonClient:
             - triton_url (str): path to the triton server
         """
         self.model = model #Inference model name, default yolov7
-        self.model_info = False
+        self.model_info = True
         self.client_timeout = None
 
         
@@ -161,4 +161,79 @@ class TritonClient:
                 logger.info(f"Written {output_label_file}")
             except Exception as e:
                 logger.warn(f"{output_label_file} could not be written. Error: {str(e)}")
+        self.print_statistics()
 
+    def detect_video(self, input_video_file: str, output_video_file: str, image_width = 960, image_height = 960, fps=10.0):
+        logger.info("Running in 'video' mode")
+        if not input_video_file:
+            logger.warn("FAILED: no input video")
+            sys.exit(1)
+        if not output_video_file:
+            logger.warn("FAILED: no output_video_file specified")
+            return
+
+        inputs = []
+        outputs = []
+        inputs.append(grpcclient.InferInput(self.INPUT_NAMES[0], [1, 3, image_width, image_height], "FP32"))
+        outputs.append(grpcclient.InferRequestedOutput(self.OUTPUT_NAMES[0]))
+        outputs.append(grpcclient.InferRequestedOutput(self.OUTPUT_NAMES[1]))
+        outputs.append(grpcclient.InferRequestedOutput(self.OUTPUT_NAMES[2]))
+        outputs.append(grpcclient.InferRequestedOutput(self.OUTPUT_NAMES[3]))
+
+        print("Opening input video stream...")
+        cap = cv2.VideoCapture(input_video_file)
+        if not cap.isOpened():
+            logger.warn(f"FAILED: cannot open video {input_video_file}")
+            sys.exit(1)
+
+        counter = 0
+        out = None
+        print("Invoking inference...")
+        while True:
+            ret, frame = cap.read()
+            if not ret:
+                logger.info("failed to fetch next frame")
+                break
+
+            if counter == 0 and output_video_file:
+                logger.info("Opening output video stream...")
+                fourcc = cv2.VideoWriter_fourcc('M', 'P', '4', 'V')
+                out = cv2.VideoWriter(output_video_file, fourcc, fps, (frame.shape[1], frame.shape[0]))
+
+            input_image_buffer = preprocess(frame, [image_width, image_height])
+            input_image_buffer = np.expand_dims(input_image_buffer, axis=0)
+
+            inputs[0].set_data_from_numpy(input_image_buffer)
+
+            results = self.triton_client.infer(model_name=self.model,
+                                          inputs=inputs,
+                                          outputs=outputs,
+                                          client_timeout=self.client_timeout)
+
+            num_dets = results.as_numpy("num_dets")
+            det_boxes = results.as_numpy("det_boxes")
+            det_scores = results.as_numpy("det_scores")
+            det_classes = results.as_numpy("det_classes")
+            detected_objects = postprocess(num_dets, det_boxes, det_scores, det_classes, frame.shape[1], frame.shape[0], [image_width, image_height])
+            logger.info(f"Frame {counter}: {len(detected_objects)} objects")
+            counter += 1
+
+            for box in detected_objects:
+                logger.info(f"{VisDroneLabels(box.classID).name}: {box.confidence}")
+                frame = render_box(frame, box.box(), color=tuple(RAND_COLORS[box.classID % 64].tolist()))
+                size = get_text_size(frame, f"{VisDroneLabels(box.classID).name}: {box.confidence:.2f}", normalised_scaling=0.6)
+                frame = render_filled_box(frame, (box.x1 - 3, box.y1 - 3, box.x1 + size[0], box.y1 + size[1]), color=(220, 220, 220))
+                frame = render_text(frame, f"{VisDroneLabels(box.classID).name}: {box.confidence:.2f}", (box.x1, box.y1), color=(30, 30, 30), normalised_scaling=0.5)
+
+            out.write(frame)
+        cap.release()
+        out.release()
+        self.print_statistics()
+
+    def print_statistics(self):
+        if self.model_info:
+            statistics = self.triton_client.get_inference_statistics(model_name=self.model)
+            if len(statistics.model_stats) != 1:
+                logger.warn("FAILED: get_inference_statistics")
+                sys.exit(1)
+            logger.info(statistics)
