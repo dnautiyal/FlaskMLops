@@ -27,8 +27,8 @@ VIDEO_INPUT_S3_KEY =  "inferencing/videos/input"
 VIDEO_OUTPUT_S3_IMAGES_KEY =  "inferencing/videos/output"
 
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
-# tmp_file_folder_name = "/static/tmp_data"
-tmp_file_folder_name = "/static"
+tmp_file_folder_name = "/static/tmp_data"
+# tmp_file_folder_name = "/static"
 tmp_file_folder = f'{ROOT_DIR}{tmp_file_folder_name}'
 os.makedirs(tmp_file_folder, exist_ok=True) 
 
@@ -64,7 +64,7 @@ def aerial_ai():
 
 @app.route("/display/<path:filename>")
 def display_video(filename):
-    return send_from_directory(app.config[tmp_file_folder_name], filename, as_attachment=True)
+    return redirect(url_for('static', filename='tmp_data/' + filename), code=301)
 
 def handle_detect_photo(file):
     # Assign an id to the asynchronous task
