@@ -82,7 +82,7 @@ class TritonClient:
                 logger.error("Got: {}".format(ex.message()))
                 sys.exit(1)
 
-    def detectImage(self, input_image_file, output_image_file, output_label_file, image_width = 960, image_height = 960):
+    def detect_image(self, input_image_file, output_image_file, output_label_file, image_width = 960, image_height = 960):
         #     logger.info("Running in 'image' mode")
         if not input_image_file:
             logger.warn("FAILED: no input image")
@@ -144,7 +144,7 @@ class TritonClient:
 
         if output_image_file:
             cv2.imwrite(output_image_file, input_image)
-            logger.info(f"Saved result to {output_image_file}")
+            logger.debug(f"Saved result to {output_image_file}")
         else:
             cv2.imshow('image', input_image)
             cv2.waitKey(0)
