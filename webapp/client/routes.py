@@ -61,6 +61,10 @@ def aerial_ai():
             
         return redirect(request.url)
 
+@app.route("/display/<path:filename>")
+def display_video(filename):
+    return app.send_from_directory(app.config['tmp_file_folder_name'], filename, as_attachment=True)
+
 def handle_detect_photo(file):
     # Assign an id to the asynchronous task
     task_id = uuid.uuid4().hex
@@ -143,9 +147,8 @@ def handle_detect_video(file):
             local_output_file_path = os.path.join(tmp_file_folder, output_file_name)
             logger.info(f'Local output-file path is: {local_output_file_path}')
             s3_client.download_file(Bucket = bucket_name, Key = f'{key_name_without_file}/{output_file_name}', Filename = local_output_file_path)
-            local_output_file_name = f"{tmp_file_folder_name}/{local_output_file_path.split('/')[-1]}"
-            # if os.path.exists(local_output_file_path):
-            #     os.remove(local_output_file_path)
+            # local_output_file_name = f"{tmp_file_folder_name}/{local_output_file_path.split('/')[-1]}"
+            local_output_file_name = local_output_file_path.split('/')[-1]
         except requests.exceptions.HTTPError as errh:
             logger.info("Http Error:",errh)
         except requests.exceptions.ConnectionError as errc:
