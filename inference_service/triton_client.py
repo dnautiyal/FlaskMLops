@@ -82,7 +82,7 @@ class TritonClient:
                 logger.error("Got: {}".format(ex.message()))
                 sys.exit(1)
 
-    def detect_image(self, input_image_file, output_image_file, output_label_file, image_width = 960, image_height = 960):
+    def detect_image(self, input_image_file: str, output_image_file: str, output_label_file: str, image_width = 960, image_height = 960):
         #     logger.info("Running in 'image' mode")
         if not input_image_file:
             logger.warn("FAILED: no input image")
@@ -157,7 +157,7 @@ class TritonClient:
             try:
                 with open(output_label_file, 'w') as f:
                     for row in output_labels:
-                        f.writelines(row)
+                        f.writelines(f'{row}\n')
                 logger.info(f"Written {output_label_file}")
             except Exception as e:
                 logger.warn(f"{output_label_file} could not be written. Error: {str(e)}")
