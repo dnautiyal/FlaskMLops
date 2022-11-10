@@ -34,7 +34,7 @@ async def root():
 
 #The inference-service endpoint receives post requests with the image and returns the transformed image
 @app.get("/detect/", tags=["Object Detect"])
-async def detect(input_image_file_url: str, output_image_file_url: str, output_label_file_url: str):
+async def detect(input_image_file_url: str, output_image_folder_url: str, output_label_folder_url: str):
     #We read the file and decode it
     # s3://aerial-detection-mlops4/inferencing/photos/input/19d09312c52945f8bcdd283c627d9b44-9999942_00000_d_0000214.jpg
     bucket_name, key_name_without_file, file_name = parse_s3_url(unquote(input_image_file_url))
@@ -47,16 +47,18 @@ async def detect(input_image_file_url: str, output_image_file_url: str, output_l
         logger.debug(f'created local temp file : {temp_input_image_filename}')        
         logger.debug(f'bucket_name = {bucket_name}, key_name_without_file = {key_name_without_file}, file_name = {file_name}')
         logger.debug("input_image_file_url: " + unquote(input_image_file_url))
-        logger.debug("output_image_file_url: " + unquote(output_image_file_url))
-        logger.debug("output_label_file_url: " + unquote(output_label_file_url))
+        logger.debug("output_image_file_url: " + unquote(output_image_folder_url))
+        logger.debug("output_label_file_url: " + unquote(output_label_folder_url))
 
     try:
         start_time = time.time()
         get_triton_client().detect_image(input_image_file=temp_input_image_filename, output_image_file=temp_output_image_filename, output_label_file=temp_output_label_filename)
         logger.info(f"Time taken to run detectImage method: {int((time.time()-start_time)*1000)} milli seconds")
-        out_bucket_name, out_key_name_without_file, out_file_name = parse_s3_url(unquote(output_image_file_url))
-        new_out_image_file_name_only = temp_output_image_filename.split('/')[-1]
+        out_bucket_name, out_key_name_without_file, new_out_image_file_name_only = parse_s3_url(f"{unquote(output_image_folder_url)}/{temp_output_image_filename.split('/')[-1]}")
         s3_client.upload_file(Bucket = out_bucket_name, Filename = temp_output_image_filename, Key = f'{out_key_name_without_file}/{new_out_image_file_name_only}')
+        if os.path.exists(temp_output_label_filename):
+            out_bucket_name, out_label_key_name_without_file, new_out_label_file_name_only = parse_s3_url(unquote(output_label_folder_url))
+            s3_client.upload_file(Bucket = out_bucket_name, Filename = temp_output_label_filename, Key = f'{out_label_key_name_without_file}/{new_out_label_file_name_only}')
     except Exception as e:
         logger.warn("Exception encountered: " + str(e))
     finally:

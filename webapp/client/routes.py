@@ -62,8 +62,8 @@ def aerial_ai():
                     img.save(local_input_file_path)
                     s3_client.upload_file(Bucket = S3_BUCKET, Filename = local_input_file_path, Key = f'{INPUT_S3_KEY}/{new_file_name}')
                     data = {"input_image_file_url": f's3://{S3_BUCKET}/{INPUT_S3_KEY}/{new_file_name}',
-                            "output_image_file_url": f's3://{S3_BUCKET}/{OUTPUT_S3_IMAGES_KEY}/OUT-{new_file_name}',
-                            "output_label_file_url": f's3://{S3_BUCKET}/{OUTPUT_S3_IMAGES_KEY}/OUT-{os.path.splitext(new_file_name)[0]}.txt'
+                            "output_image_folder_url": f's3://{S3_BUCKET}/{OUTPUT_S3_IMAGES_KEY}',
+                            "output_label_folder_url": f's3://{S3_BUCKET}/{OUTPUT_S3_IMAGES_KEY}'
                             }
                     
                     response = requests.get(url = INFERENCE_SERVICE_ENDPOINT, params = data)
