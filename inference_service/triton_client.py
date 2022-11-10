@@ -215,7 +215,7 @@ class TritonClient:
             det_scores = results.as_numpy("det_scores")
             det_classes = results.as_numpy("det_classes")
             detected_objects = postprocess(num_dets, det_boxes, det_scores, det_classes, frame.shape[1], frame.shape[0], [image_width, image_height])
-            logger.info(f"Frame {counter}: {len(detected_objects)} objects")
+            logger.debug(f"Frame {counter}: {len(detected_objects)} objects")
             counter += 1
 
             for box in detected_objects:
