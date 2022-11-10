@@ -124,8 +124,8 @@ class TritonClient:
 
         for output in self.OUTPUT_NAMES:
             result = results.as_numpy(output)
-            logger.info(f"Received result buffer \"{output}\" of size {result.shape}")
-            logger.info(f"Naive buffer sum: {np.sum(result)}")
+            if logger.isEnabledFor(level=logging.DEBUG):
+                logger.debug(f"Received result buffer \"{output}\" of size {result.shape}. Naive buffer sum: {np.sum(result)}")
 
         num_dets = results.as_numpy(self.OUTPUT_NAMES[0])
         det_boxes = results.as_numpy(self.OUTPUT_NAMES[1])
