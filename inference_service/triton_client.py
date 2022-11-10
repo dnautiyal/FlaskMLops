@@ -26,7 +26,7 @@ class TritonClient:
             - triton_url (str): path to the triton server
         """
         self.model = model #Inference model name, default yolov7
-        self.model_info = True
+        self.model_info = False
         self.client_timeout = None
 
         
