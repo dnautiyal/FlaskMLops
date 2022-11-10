@@ -3,7 +3,7 @@ import sys
 import cv2
 import argparse
 import logging
-
+import time
 import tritonclient.grpc as grpcclient
 from tritonclient.utils import InferenceServerException
 
@@ -99,7 +99,7 @@ class TritonClient:
         outputs.append(grpcclient.InferRequestedOutput(self.OUTPUT_NAMES[2]))
         outputs.append(grpcclient.InferRequestedOutput(self.OUTPUT_NAMES[3]))
 
-        logger.info("Creating buffer from image file...")
+        logger.debug("Creating buffer from image file...")
         input_image = cv2.imread(str(input_image_file))
         if input_image is None:
             logger.warn(f"FAILED: could not load input image {str(input)}")
@@ -109,18 +109,19 @@ class TritonClient:
 
         inputs[0].set_data_from_numpy(input_image_buffer)
 
-        logger.info("Invoking inference...")
+        logger.debug("Invoking inference...")
+        start_time = time.time()
         results = self.triton_client.infer(model_name=self.model,
                                       inputs=inputs,
                                       outputs=outputs,
                                       client_timeout=self.client_timeout)
+        logger.info(f"Time taken to infer by TritonServer: {(time.time()-start_time)*1000} milli seconds")
         if self.model_info:
             statistics = self.triton_client.get_inference_statistics(model_name=self.model)
             if len(statistics.model_stats) != 1:
                 logger.warn("FAILED: get_inference_statistics")
                 # sys.exit(1)
             logger.info(statistics)
-        logger.info("Done")
 
         for output in self.OUTPUT_NAMES:
             result = results.as_numpy(output)
@@ -132,7 +133,7 @@ class TritonClient:
         det_scores = results.as_numpy(self.OUTPUT_NAMES[2])
         det_classes = results.as_numpy(self.OUTPUT_NAMES[3])
         detected_objects = postprocess(num_dets, det_boxes, det_scores, det_classes, input_image.shape[1], input_image.shape[0], [image_width, image_height])
-        logger.info(f"Detected objects: {len(detected_objects)}")
+        logger.debug(f"Detected objects: {len(detected_objects)}")
 
         for box in detected_objects:
             logger.debug(f"{VisDroneLabels(box.classID).name}: {box.confidence}")
