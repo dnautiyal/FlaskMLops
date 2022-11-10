@@ -38,7 +38,7 @@ async def root():
     return {"inference_service_health": "Ok"}
 
 #The inference-service endpoint receives post requests with the image and returns the transformed image
-@app.get("/detect/", tags=["Object Detect"])
+@app.get("/detect/", tags=["Object Detect Photo"])
 async def detect(input_image_file_url: str, output_image_folder_url: str, output_label_folder_url: str):
     #We read the file and decode it
     # s3://aerial-detection-mlops4/inferencing/photos/input/19d09312c52945f8bcdd283c627d9b44-9999942_00000_d_0000214.jpg
@@ -75,7 +75,7 @@ async def detect(input_image_file_url: str, output_image_folder_url: str, output
 
 #The inference-service endpoint receives post requests with the image and returns the transformed video
 @app.get("/detect_video/", tags=["Object Detect Video"])
-async def detect(input_video_file_url: str, output_video_folder_url: str):
+async def detect_video(input_video_file_url: str, output_video_folder_url: str):
     #We read the file and decode it
     # s3://aerial-detection-mlops4/inferencing/photos/input/19d09312c52945f8bcdd283c627d9b44-9999942_00000_d_0000214.jpg
     bucket_name, key_name_without_file, file_name = parse_s3_url(unquote(input_video_file_url))
@@ -83,11 +83,11 @@ async def detect(input_video_file_url: str, output_video_folder_url: str):
     temp_input_video_filename = f'{tmp_folder_video_input}{os.sep}{file_name}'
     temp_output_video_filename = f'{tmp_folder_video_output}{os.sep}OUT-{file_name}'
     s3_client.download_file(Bucket = bucket_name, Key = f'{key_name_without_file}/{file_name}', Filename = temp_input_video_filename)
-    if logger.isEnabledFor(level=logging.DEBUG):
-        logger.debug(f'created local temp file : {temp_input_video_filename}')        
-        logger.debug(f'bucket_name = {bucket_name}, key_name_without_file = {key_name_without_file}, file_name = {file_name}')
-        logger.debug("input_image_file_url: " + unquote(input_video_file_url))
-        logger.debug(f"output_image_file_url: {unquote(output_video_folder_url)}")
+    
+    logger.info(f'created local temp file : {temp_input_video_filename}')        
+    logger.debug(f'bucket_name = {bucket_name}, key_name_without_file = {key_name_without_file}, file_name = {file_name}')
+    logger.debug("input_image_file_url: " + unquote(input_video_file_url))
+    logger.debug(f"output_video_folder_url: {unquote(output_video_folder_url)}")
 
     try:
         start_time = time.time()
