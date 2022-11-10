@@ -5,10 +5,11 @@ import logging
 from urllib.parse import unquote
 import boto3
 import os
+import time
 
 my_triton_url = 'triton:8001'
 my_model = 'yolov7-visdrone-finetuned'
-logger = logging.getLogger('inference_service')
+logger = logging.getLogger(__name__)
 
 
 #We generate a new FastAPI app in the Prod environment
@@ -41,13 +42,14 @@ async def detect(input_image_file_url: str, output_image_file_url: str, output_l
     logger.info("output_image_file_url: " + unquote(output_image_file_url))
     logger.info("output_label_file_url: " + unquote(output_label_file_url))
     try:
+        start_time = time.time()
         get_triton_client().detectImage(input_image_file=temp_input_filename, output_image_file=temp_output_image_filename, output_label_file=temp_output_label_filename)
-        
+        logger.info(f"Time taken to run detectImage method: {(time.time()-start_time)*1000} milli seconds")
         out_bucket_name, out_key_name_without_file, out_file_name = parse_s3_url(unquote(output_image_file_url))
         new_out_image_file_name_only = temp_output_image_filename.split('/')[-1]
         s3_client.upload_file(Bucket = out_bucket_name, Filename = temp_output_image_filename, Key = f'{out_key_name_without_file}/{new_out_image_file_name_only}')
     except Exception as e:
-        print(e)
+        logger.warn(e)
     return {"input_image_file_url": input_image_file_url, "output_image_file_url": f's3://{out_bucket_name}/{out_key_name_without_file}/{new_out_image_file_name_only}'}
 
 def parse_s3_url(s3_path: str):
