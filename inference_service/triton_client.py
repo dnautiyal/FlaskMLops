@@ -159,5 +159,5 @@ class TritonClient:
                     for row in output_labels:
                         f.writelines(row)
             except Exception as e:
-                logger.warn(f"{} could not be written. Error: {str(e)}")
+                logger.warn(f"{output_label_file} could not be written. Error: {str(e)}")
 
