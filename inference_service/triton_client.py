@@ -135,7 +135,7 @@ class TritonClient:
         logger.info(f"Detected objects: {len(detected_objects)}")
 
         for box in detected_objects:
-            logger.info(f"{VisDroneLabels(box.classID).name}: {box.confidence}")
+            logger.debug(f"{VisDroneLabels(box.classID).name}: {box.confidence}")
             input_image = render_box(input_image, box.box(), color=tuple(RAND_COLORS[box.classID % 64].tolist()))
             size = get_text_size(input_image, f"{VisDroneLabels(box.classID).name}: {box.confidence:.2f}", normalised_scaling=0.6)
             input_image = render_filled_box(input_image, (box.x1 - 3, box.y1 - 3, box.x1 + size[0], box.y1 + size[1]), color=(220, 220, 220))

@@ -37,12 +37,13 @@ async def detect(input_image_file_url: str, output_image_file_url: str, output_l
     temp_output_image_filename = f'{tmp_output_img_folder}{os.sep}OUT-{file_name}'
     temp_output_label_filename = f'{tmp_output_lbl_folder}{os.sep}OUT-{os.path.splitext(file_name)[0]}.txt'
     s3_client.download_file(Bucket = bucket_name, Key = f'{key_name_without_file}/{file_name}', Filename = temp_input_filename)
-    logger.info(f'created local temp file : {temp_input_filename}')
-    
-    logger.info(f'bucket_name = {bucket_name}, key_name_without_file = {key_name_without_file}, file_name = {file_name}')
-    logger.info("input_image_file_url: " + unquote(input_image_file_url))
-    logger.info("output_image_file_url: " + unquote(output_image_file_url))
-    logger.info("output_label_file_url: " + unquote(output_label_file_url))
+    if logger.isEnabledFor(level=logging.DEBUG):
+        logger.debug(f'created local temp file : {temp_input_filename}')        
+        logger.debug(f'bucket_name = {bucket_name}, key_name_without_file = {key_name_without_file}, file_name = {file_name}')
+        logger.debug("input_image_file_url: " + unquote(input_image_file_url))
+        logger.debug("output_image_file_url: " + unquote(output_image_file_url))
+        logger.debug("output_label_file_url: " + unquote(output_label_file_url))
+
     try:
         start_time = time.time()
         get_triton_client().detectImage(input_image_file=temp_input_filename, output_image_file=temp_output_image_filename, output_label_file=temp_output_label_filename)
@@ -51,7 +52,7 @@ async def detect(input_image_file_url: str, output_image_file_url: str, output_l
         new_out_image_file_name_only = temp_output_image_filename.split('/')[-1]
         s3_client.upload_file(Bucket = out_bucket_name, Filename = temp_output_image_filename, Key = f'{out_key_name_without_file}/{new_out_image_file_name_only}')
     except Exception as e:
-        logger.warn(e)
+        logger.warn("Exception encountered: " + str(e))
     return {"input_image_file_url": input_image_file_url, "output_image_file_url": f's3://{out_bucket_name}/{out_key_name_without_file}/{new_out_image_file_name_only}'}
 
 def parse_s3_url(s3_path: str):
