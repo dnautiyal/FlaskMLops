@@ -9,6 +9,8 @@ import time
 
 my_triton_url = 'triton:8001'
 my_model = 'yolov7-visdrone-finetuned'
+# setup loggers
+logging.config.fileConfig('logging.conf', disable_existing_loggers=False)
 logger = logging.getLogger(__name__)
 
 
