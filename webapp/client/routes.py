@@ -1,6 +1,6 @@
 
 # from .prediction import get_prediction, create_output_image
-from flask import Flask, request, render_template, flash, request,redirect, url_for
+from flask import Flask, request, render_template, flash, request,redirect, url_for, send_from_directory
 from flask import current_app as app
 import uuid
 import boto3
@@ -63,7 +63,7 @@ def aerial_ai():
 
 @app.route("/display/<path:filename>")
 def display_video(filename):
-    return app.send_from_directory(app.config['tmp_file_folder_name'], filename, as_attachment=True)
+    return send_from_directory(app.config['tmp_file_folder_name'], filename, as_attachment=True)
 
 def handle_detect_photo(file):
     # Assign an id to the asynchronous task
