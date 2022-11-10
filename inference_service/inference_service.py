@@ -91,7 +91,7 @@ async def detect_video(input_video_file_url: str, output_video_folder_url: str):
 
     try:
         start_time = time.time()
-        get_triton_client().detect_video(input_image_file=temp_input_video_filename, output_image_file=temp_output_video_filename)
+        get_triton_client().detect_video(input_video_file=temp_input_video_filename, output_video_file=temp_output_video_filename)
         logger.info(f"Time taken to run detect_video method: {int((time.time()-start_time)*1000)} milli seconds")
         out_bucket_name, out_key_name_without_file, new_out_image_file_name_only = parse_s3_url(f"{unquote(output_video_folder_url)}/{temp_output_video_filename.split('/')[-1]}")
         s3_client.upload_file(Bucket = out_bucket_name, Filename = temp_output_video_filename, Key = f'{out_key_name_without_file}/{new_out_image_file_name_only}')
