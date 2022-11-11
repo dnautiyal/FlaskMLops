@@ -27,7 +27,17 @@
             position: absolute;
             top: 50%;
             left: 50%;
-            width: 80%; 
+            width: 90%; 
+            transform: translate(-50%, -50%);
+            color: white;
+        }
+        .hero-text-video {
+            align-content: center; 
+            text-align: center;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 960; 
             transform: translate(-50%, -50%);
             color: white;
         }
@@ -80,22 +90,29 @@
 
 <body>
     <div class="hero-image">
+        {% if show_photo %}
         <div class="hero-text">
             <img src="/static/images/aerial-detection-logo.png" alt="Aerial Detection MLOps">
-            <br>
-            {% if show_photo %}
-                <h4 style="color:white;">Predictions for Image ({{ input_file_name|safe }})</h4>
-                <img src=" {{ output_file_name }} " alt="Output Image", width="95%", height="95%"/>
-            {% else %}
-                <h4 style="color:white;">Predictions for Video ({{ input_file_name|safe }})</h4>
-                <img src="{{ url_for('display_video', filename=output_file_name) }}"  width="95%", height="95%">
-                <br>
-                <a href="{{ url_for('replay_video', filename=output_file_name, input_filename=input_file_name) }}">replay</a>
-            {% endif %}
+            <br>            
+            <h4 style="color:white;">Predictions for Image ({{ input_file_name|safe }})</h4>
+            <img src=" {{ output_file_name }} " alt="Output Image", width="95%", height="95%"/>           
             <p></p>
             <!-- <a style="color:rgb(173, 8, 8);font-size:20px; font-weight: bold;" href="javascript:history.back()">New Analysis</a> -->
             <a class="link_button" href="javascript:history.back()">New Analysis</a>
         </div>
+        {% else %}
+            <div class="hero-text-video">
+                <img src="/static/images/aerial-detection-logo.png" alt="Aerial Detection MLOps">
+                <br>
+                <h4 style="color:white;">Predictions for Video ({{ input_file_name|safe }})</h4>
+                <img src="{{ url_for('display_video', filename=output_file_name) }}"  width="95%", height="95%">
+                <br>
+                <a href="{{ url_for('replay_video', filename=output_file_name, input_filename=input_file_name) }}">replay</a>
+                <p></p>
+                <!-- <a style="color:rgb(173, 8, 8);font-size:20px; font-weight: bold;" href="javascript:history.back()">New Analysis</a> -->
+                <a class="link_button" href="javascript:history.back()">New Analysis</a>
+            </div>
+        {% endif %}
         <div class="bottomright">
             <img src="/static/images/Fourthbrain-removebg-preview.png" alt="FourthBrain:  MLE-6/Capstone Project">            
         </div>
