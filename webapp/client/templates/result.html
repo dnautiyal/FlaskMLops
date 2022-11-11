@@ -110,7 +110,8 @@
                 <a href="{{ url_for('replay_video', filename=output_file_name, input_filename=input_file_name) }}" style="color: cyan">replay</a>
                 <p></p>
                 <!-- <a style="color:rgb(173, 8, 8);font-size:20px; font-weight: bold;" href="javascript:history.back()">New Analysis</a> -->
-                <a class="link_button" href="javascript:history.back()">New Analysis</a>
+                <!-- <a class="link_button" href="javascript:history.back()">New Analysis</a> -->
+                <a class="link_button" href="{{ url_for('/') }}">New Analysis</a>
             </div>
         {% endif %}
         <div class="bottomright">
