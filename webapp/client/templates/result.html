@@ -27,7 +27,7 @@
             position: absolute;
             top: 50%;
             left: 50%;
-            width: 100%; 
+            /* width: 100%;  */
             transform: translate(-50%, -50%);
             color: white;
         }
@@ -89,6 +89,7 @@
             {% else %}
                 <h4 style="color:white;">Predictions for Video ({{ input_file_name|safe }})</h4>
                 <img src="{{ url_for('display_video', filename=output_file_name) }}"  width="95%", height="95%">
+                <br>
                 <a href="{{ url_for('replay_video', filename=output_file_name, input_filename=input_file_name) }}">replay</a>
             {% endif %}
             <p></p>
