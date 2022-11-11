@@ -68,7 +68,8 @@ def aerial_ai():
 
 @app.route("/display/<path:filename>")
 def display_video(filename):
-    path = url_for('static', filename='tmp_data/' + filename)
+    path = os.path.join(tmp_file_folder, filename)
+    # path = url_for('static', filename='tmp_data/' + filename)
     start, end = get_range(request)
     return partial_response(path, start, end)
 
