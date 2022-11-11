@@ -107,7 +107,7 @@
                 <h4 style="color:white;">Predictions for Video ({{ input_file_name|safe }})</h4>
                 <img src="{{ url_for('display_video', filename=output_file_name) }}"  width="95%", height="95%">
                 <br>
-                <a href="{{ url_for('replay_video', filename=output_file_name, input_filename=input_file_name) }}">replay</a>
+                <a href="{{ url_for('replay_video', filename=output_file_name, input_filename=input_file_name) }}" style="color: cyan">replay</a>
                 <p></p>
                 <!-- <a style="color:rgb(173, 8, 8);font-size:20px; font-weight: bold;" href="javascript:history.back()">New Analysis</a> -->
                 <a class="link_button" href="javascript:history.back()">New Analysis</a>
