@@ -66,12 +66,6 @@ def aerial_ai():
             
         return redirect(request.url)
 
-@app.route("/display/<path:filename>")
-def display_video(filename):
-    path = os.path.join(tmp_file_folder, filename)
-    # path = url_for('static', filename='tmp_data/' + filename)
-    start, end = get_range(request)
-    return partial_response(path, start, end)
 
 def handle_detect_photo(file):
     # Assign an id to the asynchronous task
@@ -197,6 +191,13 @@ def allowed_photo_file(filename):
 def allowed_video_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_VIDEO_FILE_EXTENSIONS
+
+@app.route("/display/<path:filename>")
+def display_video(filename):
+    path = os.path.join(tmp_file_folder, filename)
+    # path = url_for('static', filename='tmp_data/' + filename)
+    start, end = get_range(request)
+    return partial_response(path, start, end)
 
 def partial_response(path, start, end=None):
     logger.info('Requested: %s, %s', start, end)
