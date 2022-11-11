@@ -197,7 +197,7 @@ def display_video(filename):
     video_path = os.path.join(tmp_file_folder, filename)
     return Response(gen_frames(video_path), mimetype='multipart/x-mixed-replace; boundary=frame')
 
-@app.route("/replay/<path:filename>/<path:input_filename")
+@app.route("/replay/<filename>/<input_filename")
 def replay_video(filename, input_filename):
     return render_template('result.html', input_file_name=input_filename, output_file_name = filename, show_photo=False)
 
