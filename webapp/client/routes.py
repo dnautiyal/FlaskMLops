@@ -1,7 +1,8 @@
 
 # from .prediction import get_prediction, create_output_image
-from flask import Flask, request, render_template, flash, request,redirect, url_for, send_from_directory
+from flask import Flask, request, Response, render_template, flash, request,redirect, url_for, send_from_directory
 from flask import current_app as app
+import mimetypes
 import uuid
 import boto3
 import os
@@ -10,7 +11,10 @@ import requests
 import json
 from urllib.parse import unquote
 import cv2
+import re
 
+MB = 1 << 20
+BUFF_SIZE = 10 * MB
 # ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 ALLOWED_PHOTO_FILE_EXTENSIONS = {'jpg'}
 ALLOWED_VIDEO_FILE_EXTENSIONS = {'mp4'}
@@ -64,7 +68,9 @@ def aerial_ai():
 
 @app.route("/display/<path:filename>")
 def display_video(filename):
-    return redirect(url_for('static', filename='tmp_data/' + filename), code=301)
+    path = url_for('static', filename='tmp_data/' + filename)
+    start, end = get_range(request)
+    return partial_response(path, start, end)
 
 def handle_detect_photo(file):
     # Assign an id to the asynchronous task
@@ -191,7 +197,54 @@ def allowed_video_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_VIDEO_FILE_EXTENSIONS
 
+def partial_response(path, start, end=None):
+    logger.info('Requested: %s, %s', start, end)
+    file_size = os.path.getsize(path)
 
+    # Determine (end, length)
+    if end is None:
+        end = start + BUFF_SIZE - 1
+    end = min(end, file_size - 1)
+    end = min(end, start + BUFF_SIZE - 1)
+    length = end - start + 1
+
+    # Read file
+    with open(path, 'rb') as fd:
+        fd.seek(start)
+        bytes = fd.read(length)
+    assert len(bytes) == length
+
+    response = Response(
+        bytes,
+        206,
+        mimetype=mimetypes.guess_type(path)[0],
+        direct_passthrough=True,
+    )
+    response.headers.add(
+        'Content-Range', 'bytes {0}-{1}/{2}'.format(
+            start, end, file_size,
+        ),
+    )
+    response.headers.add(
+        'Accept-Ranges', 'bytes'
+    )
+    logger.info('Response: %s', response)
+    logger.info('Response: %s', response.headers)
+    return response
+
+def get_range(request):
+    range = request.headers.get('Range')
+    logger.info('Requested: %s', range)
+    m = re.match('bytes=(?P<start>\d+)-(?P<end>\d+)?', range)
+    if m:
+        start = m.group('start')
+        end = m.group('end')
+        start = int(start)
+        if end is not None:
+            end = int(end)
+        return start, end
+    else:
+        return 0, None
 
 
 
