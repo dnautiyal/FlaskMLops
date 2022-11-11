@@ -195,8 +195,11 @@ def allowed_video_file(filename):
 @app.route("/display/<path:filename>")
 def display_video(filename):
     video_path = os.path.join(tmp_file_folder, filename)
-    # path = url_for('static', filename='tmp_data/' + filename)
     return Response(gen_frames(video_path), mimetype='multipart/x-mixed-replace; boundary=frame')
+
+@app.route("/replay/<path:filename>/<path:input_filename")
+def replay_video(filename, input_filename):
+    return render_template('result.html', input_file_name=input_filename, output_file_name = filename, show_photo=False)
 
 # https://stackoverflow.com/questions/72367168/is-it-possible-to-use-opencv-to-display-a-video-on-web-browser-while-blurring-th
 def gen_frames(video_file_path):  # generate frame by frame from camera
