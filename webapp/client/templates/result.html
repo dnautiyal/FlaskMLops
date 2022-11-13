@@ -92,7 +92,7 @@
     <div class="hero-image">
         {% if show_photo %}
         <div class="hero-text">
-            <img src="/static/images/aerial-detection-logo.png" alt="Aerial Detection MLOps">
+            <img src="/static/images/aerial-detection-logo-gold.png" alt="Aerial Detection MLOps">
             <br>            
             <h4 style="color:white;">Predictions for Image ({{ input_file_name|safe }})</h4>
             <img src=" {{ output_file_name }} " alt="Output Image", width="95%", height="95%"/>           
@@ -102,7 +102,7 @@
         </div>
         {% else %}
             <div class="hero-text-video">
-                <img src="/static/images/aerial-detection-logo.png" alt="Aerial Detection MLOps">
+                <img src="/static/images/aerial-detection-logo-gold.png" alt="Aerial Detection MLOps">
                 <br>
                 <h4 style="color:white;">Predictions for Video ({{ input_file_name|safe }})</h4>
                 <img src="{{ url_for('display_video', filename=output_file_name) }}"  width="95%", height="95%">
