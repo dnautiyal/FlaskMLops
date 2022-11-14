@@ -76,8 +76,7 @@ async def detect(input_image_file_url: str, output_image_folder_url: str, output
 #The inference-service endpoint receives post requests with the image and returns the transformed video
 @app.get("/detect_video/", tags=["Object Detect Video"])
 async def detect_video(input_video_file_url: str, output_video_folder_url: str):
-    #We read the file and decode it
-    # s3://aerial-detection-mlops4/inferencing/photos/input/19d09312c52945f8bcdd283c627d9b44-9999942_00000_d_0000214.jpg
+    #We read the file and decode it    
     bucket_name, key_name_without_file, file_name = parse_s3_url(unquote(input_video_file_url))
     
     temp_input_video_filename = f'{tmp_folder_video_input}{os.sep}{file_name}'
